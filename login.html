@@ -7,6 +7,8 @@
     <title>FalloCero - Iniciar Sesión</title>
     <link rel="stylesheet" href="css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
 </head>
 
 <body class="login-page">
@@ -19,12 +21,12 @@
 
             <h1 class="welcome-title">FalloCero</h1>
             <div class="welcome-divider"></div>
-            
+
             <h2 class="welcome-subtitle">Bienvenido</h2>
-            
+
             <p class="welcome-tagline">Tu plataforma para una ciudad conectada</p>
             <p class="welcome-description">
-                Colabora en la construcción de una infraestructura eléctrica eficiente 
+                Colabora en la construcción de una infraestructura eléctrica eficiente
                 y reporta incidencias en tiempo real para un mejor servicio ciudadano.
             </p>
         </div>
@@ -92,6 +94,15 @@
     </div>
 
     <script type="module" src="js/login.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registrado con éxito', reg))
+                    .catch(err => console.error('Error al registrar el Service Worker', err));
+            });
+        }
+    </script>
 </body>
 
 </html>
