@@ -50,11 +50,7 @@ body.login-page {
     justify-content: center;
 }
 
-.brand-logo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+
 
 .login-brand h1 {
     font-size: 26px;
@@ -136,6 +132,16 @@ body.login-page {
     transition: all 0.2s ease;
 }
 
+/* 🔵 Oculta el ícono nativo de "revelar contraseña" que agregan
+   algunos navegadores (Edge/IE) dentro de inputs type="password",
+   para que no se encime con nuestro ícono bx-hide/bx-show. */
+.input-wrapper input[type="password"]::-ms-reveal,
+.input-wrapper input[type="password"]::-ms-clear {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
 /* Efectos de enfoque en los inputs */
 .input-wrapper input:focus {
     outline: none;
@@ -205,6 +211,63 @@ body.login-page {
 
 .btn-primary:active {
     transform: scale(0.98);
+}
+
+/* Divisor "o" entre el login normal y el de Google */
+.divider-or {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+}
+
+.divider-or::before,
+.divider-or::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.divider-or span {
+    padding: 0 12px;
+}
+
+/* Botón de Google */
+.btn-google {
+    width: 100%;
+    padding: 12px;
+    font-size: 14.5px;
+    font-weight: 600;
+    background-color: #ffffff;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-google i {
+    font-size: 18px;
+    color: #ea4335;
+}
+
+.btn-google:hover {
+    background-color: #f8fafc;
+}
+
+.btn-google:active {
+    transform: scale(0.98);
+}
+
+.btn-google:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Footer de la tarjeta */

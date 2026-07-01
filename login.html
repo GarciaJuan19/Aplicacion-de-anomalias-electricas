@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 
 <head>
@@ -7,7 +8,7 @@
     <title>FalloCero - Iniciar Sesión</title>
     <link rel="stylesheet" href="css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0052cc">
 </head>
 
@@ -62,7 +63,7 @@
                 <div class="input-wrapper">
                     <i class='bx bx-lock-alt input-icon'></i>
                     <input type="password" id="login-password" placeholder="Tu contraseña" required>
-                    <i class='bx bx-hide password-toggle' id="toggle-password"
+                    <i class='bx bx-show password-toggle' id="toggle-password"
                         style="cursor: pointer; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px;"></i>
                 </div>
             </div>
@@ -80,6 +81,14 @@
                     <i class='bx bx-bolt'></i> Iniciar sesión
                 </button>
             </div>
+
+            <div class="divider-or">
+                <span>o</span>
+            </div>
+
+            <button type="button" class="btn-google" id="btn-google">
+                <i class='bx bxl-google'></i> Continuar con Google
+            </button>
 
             <div class="form-footer">
                 <span>¿No tienes una cuenta? <a href="registro.html">Regístrate</a></span>

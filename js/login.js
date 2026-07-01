@@ -1,10 +1,24 @@
 import { auth, db } from './firebase-config.js';
 import { 
     signInWithEmailAndPassword,
-    sendEmailVerification
+    sendEmailVerification,
+    GoogleAuthProvider,
+    signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getMenuUrl, mostrarToast, esAppMovil, esLocalhost } from './utils.js';
+
+// 🔵 Asegura que los toasts (mostrarToast) siempre se vean por encima
+// de cualquier modal, sin importar el orden en que se creen.
+(() => {
+    const estiloToastArriba = document.createElement('style');
+    estiloToastArriba.textContent = `
+        [class*="toast"], [id*="toast"] {
+            z-index: 2147483647 !important;
+        }
+    `;
+    document.head.appendChild(estiloToastArriba);
+})();
 
 // ==========================================
 //  SPLASH SCREEN
@@ -193,6 +207,61 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error al verificar usuario:", error);
             return false;
         }
+    }
+
+    // ==========================================
+    //  LOGIN CON GOOGLE
+    // ==========================================
+    const btnGoogle = document.getElementById('btn-google');
+    if (btnGoogle) {
+        btnGoogle.addEventListener('click', async () => {
+            const textoOriginal = btnGoogle.innerHTML;
+            btnGoogle.disabled = true;
+            btnGoogle.innerHTML = `<i class='bx bx-loader-alt bx-spin'></i> Conectando...`;
+
+            try {
+                const provider = new GoogleAuthProvider();
+                const resultado = await signInWithPopup(auth, provider);
+                const user = resultado.user;
+
+                // Si es la primera vez que este usuario entra, creamos su perfil en Firestore
+                const userDocRef = doc(db, "usuarios", user.uid);
+                const docSnap = await getDoc(userDocRef);
+
+                if (!docSnap.exists()) {
+                    await setDoc(userDocRef, {
+                        id_usuario: user.uid,
+                        nombre_completo: user.displayName || "Ciudadano",
+                        correo_electronico: user.email,
+                        rol: "ciudadano",
+                        fecha_registro: new Date().toISOString(),
+                        email_verificado: true, // Google ya verifica el correo
+                        plataforma: esAppMovil() ? 'apk' : 'web',
+                        metodo_registro: 'google'
+                    });
+                }
+
+                if (user.email === 'admin1@gmail.com' || user.email.endsWith('@admin.com')) {
+                    window.location.href = 'admin/index.html';
+                } else {
+                    window.location.href = 'menu.html';
+                }
+
+            } catch (error) {
+                console.error("❌ Error con Google Sign-In:", error.code, error.message);
+
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    mostrarToast('Ya existe una cuenta con este correo. Inicia sesión con tu contraseña.', 'error');
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    // El usuario cerró la ventana de Google, no mostramos error
+                } else {
+                    mostrarToast('❌ No se pudo iniciar sesión con Google. Inténtalo de nuevo.', 'error');
+                }
+
+                btnGoogle.disabled = false;
+                btnGoogle.innerHTML = textoOriginal;
+            }
+        });
     }
 
     // ==========================================

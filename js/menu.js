@@ -10,6 +10,7 @@ import { getMenuUrl, mostrarToast } from './utils.js';
 
 const txtDisplayName = document.getElementById('user-display-name');
 const menuProfilePreview = document.getElementById('menu-profile-preview');
+const menuAvatarIcon = document.getElementById('menu-avatar-icon');
 
 // ==========================================
 //  VARIABLE PARA CONTROLAR REDIRECCIONES
@@ -110,6 +111,22 @@ function mostrarAlertaVerificacion() {
 }
 
 // ==========================================
+//  FUNCIÓN: MOSTRAR FOTO DE PERFIL O ÍCONO POR DEFECTO
+// ==========================================
+function mostrarAvatar(fotoUrl) {
+    if (!menuProfilePreview || !menuAvatarIcon) return;
+
+    if (fotoUrl && fotoUrl.trim() !== "") {
+        menuProfilePreview.src = fotoUrl;
+        menuProfilePreview.style.display = 'block';
+        menuAvatarIcon.style.display = 'none';
+    } else {
+        menuProfilePreview.style.display = 'none';
+        menuAvatarIcon.style.display = 'flex';
+    }
+}
+
+// ==========================================
 //  FUNCIÓN: CARGAR DATOS DEL USUARIO
 // ==========================================
 async function cargarDatosUsuario(user) {
@@ -122,15 +139,15 @@ async function cargarDatosUsuario(user) {
             const nombreUsuario = userData.nombre || userData.nombre_completo || "Ciudadano";
             txtDisplayName.innerText = nombreUsuario;
 
-            if (userData.fotoUrl && userData.fotoUrl.trim() !== "") {
-                menuProfilePreview.src = userData.fotoUrl;
-            }
+            mostrarAvatar(userData.fotoUrl);
         } else {
             txtDisplayName.innerText = "Ciudadano";
+            mostrarAvatar(null);
         }
     } catch (error) {
         console.error("Error al recuperar los datos del usuario:", error);
         txtDisplayName.innerText = "Ciudadano";
+        mostrarAvatar(null);
     }
 }
 
