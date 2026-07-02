@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCloseMediaModal = document.getElementById('btn-close-media-modal');
     const inputGaleria = document.getElementById('input-galeria');
 
-    // 🆕 Elementos de la cámara en vivo
+    // Elementos de la cámara en vivo
     const modalCameraLive = document.getElementById('modal-camera-live');
     const videoCamera = document.getElementById('video-camera');
     const canvasCapture = document.getElementById('canvas-capture');
@@ -35,12 +35,82 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- REFERENCIA DEL FORMULARIO ---
     const formReporte = document.getElementById('form-reporte');
     const btnEnviar = document.getElementById('btn-enviar');
+    const selectTipoFalla = document.getElementById('tipo-falla');
+    const textareaDescripcion = document.getElementById('descripcion');
 
     let streamCamera = null; // Para detener la cámara
-    let archivoFotoReporte = null; // 🆕 Archivo para subir a Storage
+    let archivoFotoReporte = null; //  Archivo para subir a Storage
+
+    // BORRADOR LOCAL DEL REPORTE (localStorage)
+    // Guardamos  texto/ubicación no la foto, por límite de espacio de 5MB en localStorage. La foto se sube a Storage al enviar.
+
+    const CLAVE_BORRADOR = 'fallocero_borrador_reporte';
+    let timeoutGuardadoBorrador = null;
+
+    function guardarBorrador() {
+        try {
+            const borrador = {
+                tipoFalla: selectTipoFalla.value || '',
+                descripcion: textareaDescripcion.value || '',
+                latitud: inputLat.value || '',
+                longitud: inputLng.value || '',
+                geoTexto: geoText.innerText || '',
+                guardadoEn: new Date().toISOString()
+            };
+            localStorage.setItem(CLAVE_BORRADOR, JSON.stringify(borrador));
+        } catch (error) {
+            console.error('No se pudo guardar el borrador local:', error);
+        }
+    }
+
+    // Guarda con un pequeño retraso para no escribir en cada tecla
+    function guardarBorradorConRetraso() {
+        clearTimeout(timeoutGuardadoBorrador);
+        timeoutGuardadoBorrador = setTimeout(guardarBorrador, 400);
+    }
+
+    function borrarBorrador() {
+        localStorage.removeItem(CLAVE_BORRADOR);
+    }
+
+    function cargarBorrador() {
+        try {
+            const guardado = localStorage.getItem(CLAVE_BORRADOR);
+            if (!guardado) return;
+
+            const borrador = JSON.parse(guardado);
+
+            let seRestauroAlgo = false;
+
+            if (borrador.tipoFalla) {
+                selectTipoFalla.value = borrador.tipoFalla;
+                seRestauroAlgo = true;
+            }
+
+            if (borrador.descripcion) {
+                textareaDescripcion.value = borrador.descripcion;
+                seRestauroAlgo = true;
+            }
+
+            if (borrador.latitud && borrador.longitud) {
+                inputLat.value = borrador.latitud;
+                inputLng.value = borrador.longitud;
+                geoText.innerText = borrador.geoTexto || `📍 ${borrador.latitud}, ${borrador.longitud}`;
+                geoText.classList.add('success-text');
+                geoSuccessIcon.classList.remove('hidden');
+                seRestauroAlgo = true;
+            }
+
+            if (seRestauroAlgo) {
+                mostrarToast('📝 Recuperamos un borrador que tenías sin enviar.', 'exito');
+            }
+        } catch (error) {
+            console.error('No se pudo restaurar el borrador local:', error);
+        }
+    }
 
     // ================================================
-    // 🆕 FUNCIÓN PARA ABRIR LA CÁMARA EN VIVO
+    // FUNCIÓN PARA ABRIR LA CÁMARA EN VIVO
     // ================================================
     async function abrirCamaraVivo() {
         try {
@@ -116,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ================================================
-    // 🆕 FUNCIÓN PARA CERRAR LA CÁMARA
+    // FUNCIÓN PARA CERRAR LA CÁMARA
     // ================================================
     function cerrarCamara() {
         if (streamCamera) {
@@ -128,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ================================================
-    // 🆕 FUNCIÓN PARA CAPTURAR FOTO DESDE EL VIDEO
+    // FUNCIÓN PARA CAPTURAR FOTO DESDE EL VIDEO
     // ================================================
     async function capturarFoto() {
         if (!videoCamera.videoWidth || !videoCamera.videoHeight) {
@@ -174,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ================================================
-    // 🆕 ABRIR GALERÍA CON MÉTODO TRADICIONAL
+    // ABRIR GALERÍA CON MÉTODO TRADICIONAL
     // ================================================
     function abrirGaleria() {
         inputGaleria.value = '';
@@ -187,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ================================================
-    // 🆕 PROCESAR IMAGEN DESDE GALERÍA (CON STORAGE)
+    // PROCESAR IMAGEN DESDE GALERÍA (CON STORAGE)
     // ================================================
     async function procesarArchivoImagen(file) {
         if (!file) return;
@@ -220,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ================================================
-    // 🆕 SISTEMA DE TOASTS
+    // SISTEMA DE TOASTS
     // ================================================
     function mostrarToast(mensaje, tipo) {
         const toastsExistentes = document.querySelectorAll('.toast-alerta');
@@ -331,6 +401,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCamara.classList.remove('hidden');
     });
 
+    //  Guardar borrador al cambiar tipo de anomalía o descripción
+    selectTipoFalla.addEventListener('change', guardarBorrador);
+    textareaDescripcion.addEventListener('input', guardarBorradorConRetraso);
+
     // ================================================
     // LÓGICA DE GEOLOCALIZACIÓN
     // ================================================
@@ -358,6 +432,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 geoSuccessIcon.classList.remove('hidden');
                 btnLocation.disabled = false;
                 mostrarToast('📍 Ubicación obtenida correctamente', 'exito');
+
+                //Guardamos el borrador ya con la ubicación incluida
+                guardarBorrador();
             },
             (error) => {
                 btnLocation.disabled = false;
@@ -392,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ================================================
-    // 🆕 ENVÍO DEL REPORTE CON STORAGE
+    // ENVÍO DEL REPORTE CON STORAGE
     // ================================================
     formReporte.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -467,6 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const docRef = await addDoc(collection(db, "reportes"), nuevoReporteData);
 
             mostrarToast(`🎉 ¡Reporte enviado! Folio: ${docRef.id.substring(0,8)}`, 'exito');
+
+            // 🆕 El reporte se envió con éxito: ya no hace falta el borrador
+            borrarBorrador();
             
             // Limpieza completa
             formReporte.reset();
@@ -489,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ================================================
-    // 🆕 AÑADIR ESTILOS PARA LA CÁMARA
+    // AÑADIR ESTILOS PARA LA CÁMARA
     // ================================================
     const styleCamera = document.createElement('style');
     styleCamera.textContent = `
@@ -512,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
             transition: color 0.3s ease;
         }
         
-        /* 🆕 Estilos para la cámara en vivo */
+        /* Estilos para la cámara en vivo */
         .camera-modal-content {
             max-width: 500px;
             width: 100%;
@@ -572,5 +652,8 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(styleCamera);
 
-    console.log('📱 FalloCero - Módulo de reporte con cámara en vivo y Storage cargado');
+    //   Al cargar la pantalla, intentamos restaurar un borrador previo
+    cargarBorrador();
+
+    console.log('📱 FalloCero - Módulo de reporte con cámara en vivo, Storage y borrador local cargado');
 });
