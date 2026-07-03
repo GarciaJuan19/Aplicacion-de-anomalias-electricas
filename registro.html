@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0052cc">
+    <script type="module" src="js/modo-oscuro.js"></script>
 </head>
 <body class="auth-body">
 
@@ -83,27 +84,31 @@
         </footer>
     </main>
 
-    <div id="modal-terminos" class="modal-panel-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center;">
-        <div style="background: white; border-radius: 20px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <h3 style="margin: 0 0 12px 0; color: #1e293b; font-size: 20px;">Términos de Servicio</h3>
-            <div style="overflow-y: auto; flex-grow: 1; margin-bottom: 20px; padding-right: 8px; color: #475569; font-size: 14px; line-height: 1.6; text-align: left;">
+    <div id="modal-terminos" class="modal-panel-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">
+                <i class='bx bx-file'></i> Términos de Servicio
+            </h3>
+            <div class="modal-body">
                 <p><strong>1. Uso de la Plataforma:</strong> FalloCero es una aplicación destinada al reporte y monitoreo colaborativo de anomalías eléctricas en la comunidad. Te comprometes a proporcionar información verídica y de utilidad pública.</p>
                 <p><strong>2. Responsabilidad:</strong> El usuario es responsable de asegurar la confidencialidad de sus credenciales de acceso. FalloCero no se hace responsable por el mal uso de la cuenta por terceros.</p>
                 <p><strong>3. Modificaciones:</strong> Nos reservamos el derecho de actualizar los presentes términos para adaptarlos a novedades legislativas o mejoras en el servicio.</p>
             </div>
-            <button type="button" id="cerrar-terminos" style="background: #0a46d1; color: white; border: none; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Entendido</button>
+            <button type="button" id="cerrar-terminos" class="btn-modal-close">Entendido</button>
         </div>
     </div>
 
-    <div id="modal-privacidad" class="modal-panel-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center;">
-        <div style="background: white; border-radius: 20px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <h3 style="margin: 0 0 12px 0; color: #1e293b; font-size: 20px;">Política de Privacidad</h3>
-            <div style="overflow-y: auto; flex-grow: 1; margin-bottom: 20px; padding-right: 8px; color: #475569; font-size: 14px; line-height: 1.6; text-align: left;">
+    <div id="modal-privacidad" class="modal-panel-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">
+                <i class='bx bx-shield-quarter'></i> Política de Privacidad
+            </h3>
+            <div class="modal-body">
                 <p><strong>1. Datos Recopilados:</strong> Recopilamos tu nombre completo, correo electrónico y datos relativos a los reportes de anomalías eléctricas (como ubicación geográfica del incidente) para la correcta gestión de la plataforma.</p>
                 <p><strong>2. Uso de Datos:</strong> Tu información se utiliza exclusivamente para mantener el control de los reportes y enviar notificaciones sobre el estado de las averías en tu zona.</p>
                 <p><strong>3. Seguridad:</strong> Implementamos medidas técnicas y organizativas para proteger tus datos contra accesos no autorizados mediante la infraestructura segura de Firebase.</p>
             </div>
-            <button type="button" id="cerrar-privacidad" style="background: #0a46d1; color: white; border: none; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Entendido</button>
+            <button type="button" id="cerrar-privacidad" class="btn-modal-close">Entendido</button>
         </div>
     </div>
 

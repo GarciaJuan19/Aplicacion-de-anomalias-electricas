@@ -44,27 +44,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.getElementById('btn-aplicar-fecha').addEventListener('click', () => {
-            fechaDesde = inputDesde.value ? new Date(inputDesde.value + 'T00:00:00') : null;
-            fechaHasta = inputHasta.value ? new Date(inputHasta.value + 'T23:59:59') : null;
-            modalFecha.style.display = 'none';
+    fechaDesde = inputDesde.value ? new Date(inputDesde.value + 'T00:00:00') : null;
+    fechaHasta = inputHasta.value ? new Date(inputHasta.value + 'T23:59:59') : null;
+    modalFecha.style.display = 'none';
 
-            // Actualiza el botón para mostrar que hay filtro activo
-            btnFilterDate.style.background = (fechaDesde || fechaHasta) ? '#6366f1' : '';
-            btnFilterDate.style.color = (fechaDesde || fechaHasta) ? '#fff' : '';
+    // ✅ Reemplaza los estilos inline por una clase
+    btnFilterDate.classList.toggle('filtro-activo', !!(fechaDesde || fechaHasta));
 
-            renderizarReportes();
-        });
+    renderizarReportes();
+});
 
-        document.getElementById('btn-limpiar-fecha').addEventListener('click', () => {
-            fechaDesde = null;
-            fechaHasta = null;
-            inputDesde.value = '';
-            inputHasta.value = '';
-            btnFilterDate.style.background = '';
-            btnFilterDate.style.color = '';
-            modalFecha.style.display = 'none';
-            renderizarReportes();
-        });
+document.getElementById('btn-limpiar-fecha').addEventListener('click', () => {
+    fechaDesde = null;
+    fechaHasta = null;
+    inputDesde.value = '';
+    inputHasta.value = '';
+    btnFilterDate.classList.remove('filtro-activo'); // ✅
+    modalFecha.style.display = 'none';
+    renderizarReportes();
+});
         // --- MODAL DETALLE ---
         btnCerrarModal.addEventListener('click', () => {
             modalDetalle.style.display = 'none';
@@ -310,34 +308,33 @@ console.log("elemento detalle-fecha:", document.getElementById('detalle-fecha'))
             const card = document.createElement('div');
             card.className = 'report-card';
             card.innerHTML = `
-            <div class="card-header-info">
-                <div class="title-block">
-                    <div class="icon-type"><i class='bx bx-error'></i></div>
-                    <div class="text-meta">
-                        <!-- ✅ tipoAnomalia camelCase -->
-                        <h3 style="text-transform: capitalize;">${reporte.tipoAnomalia || 'Falla Eléctrica'}</h3>
-                        <span><i class='bx bx-time-five'></i> ${fechaMostrar}</span>
-                    </div>
-                </div>
-                <span class="badge-status ${badgeClass}">${estadoFormateado}</span>
+    <div class="card-header-info">
+        <div class="title-block">
+            <div class="icon-type"><i class='bx bx-error'></i></div>
+            <div class="text-meta">
+                <h3 style="text-transform: capitalize;">${reporte.tipoAnomalia || 'Falla Eléctrica'}</h3>
+                <span><i class='bx bx-time-five'></i> ${fechaMostrar}</span>
             </div>
-            <div class="card-location" style="margin-bottom: 6px;">
-                <i class='bx bx-map'></i>
-                <span>${ubicacionTexto}</span>
-            </div>
-            <p style="font-size: 0.9rem; color: #475569; margin: 0 0 10px 0; text-align: left;">
-                <strong>Descripción:</strong> ${reporte.descripcion || 'Sin descripción.'}
-            </p>
-            <div class="card-actions">
-                <button class="btn-details">Ver Detalles</button>
-                <select class="select-action" data-id="${reporte.id}">
-                    <option value="" disabled selected>Cambiar Estado</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="en revisión">En revisión</option>
-                    <option value="resuelto">Resuelto</option>
-                </select>
-            </div>
-        `;
+        </div>
+        <span class="badge-status ${badgeClass}">${estadoFormateado}</span>
+    </div>
+    <div class="card-location">
+        <i class='bx bx-map'></i>
+        <span>${ubicacionTexto}</span>
+    </div>
+    <p class="card-desc">
+        <strong>Descripción:</strong> ${reporte.descripcion || 'Sin descripción.'}
+    </p>
+    <div class="card-actions">
+        <button class="btn-details">Ver Detalles</button>
+        <select class="select-action" data-id="${reporte.id}">
+            <option value="" disabled selected>Cambiar Estado</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="en revisión">En revisión</option>
+            <option value="resuelto">Resuelto</option>
+        </select>
+    </div>
+`;
 
             const select = card.querySelector('.select-action');
             select.addEventListener('change', async (e) => {

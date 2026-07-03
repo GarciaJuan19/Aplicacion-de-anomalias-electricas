@@ -1,13 +1,9 @@
 @use 'login';
-@use 'mapa';
-@use 'menu';
-@use 'mis-reportes';
-@use 'recuperarPassword';
 @use 'registro';
-@use 'reportar';
-@use 'perfil';
 @use 'inicio';
-
-//admin
-@use 'admin';
-@use 'mapa-admin';
+@use 'recuperarPassword';
+@use 'menu';
+@use 'perfil';
+@use 'reportar';
+@use 'misReportes';
+@use 'mapa';

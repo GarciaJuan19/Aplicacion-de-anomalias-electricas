@@ -1,69 +1,76 @@
+@use 'styles' as *;
 
-// Variables
-$color-principal: #0a46d1;
-$color-texto-oscuro: #e4e7ed;
-$color-texto-mutado: #e8edf5;
-$color-activo-nav: #ef4444;
+/* ======================================================================
+   MAPA - Página principal
+   ====================================================================== */
 
 .app-body {
-    background-color: #f8fafc;
+    background-color: var(--bg-app);
     margin: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh; // Fuerza a ocupar la pantalla completa del celular
+    height: 100vh;
     overflow: hidden;
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
 }
 
+/* ======================================================================
+   HEADER
+   ====================================================================== */
+
 .app-header {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     padding: 14px 16px;
-    border-bottom: 1px solid #e2e8f0;
-    flex-shrink: 0; // Evita que el header se colapse con el mapa
+    border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
 
     .header-content {
         display: grid;
-        grid-template-columns: auto 1fr; 
+        grid-template-columns: auto 1fr;
         align-items: center;
-        gap: 15px; 
+        gap: 15px;
 
-
+        // Flecha de retroceso
         &::before {
-            content: "\2190"; 
-            grid-row: span 2; 
-            font-size: 20px; 
-            font-weight: 700; 
-            color: $color-principal; 
+            content: "\2190";
+            grid-row: span 2;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
             cursor: pointer;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: all 0.2s ease;
             display: inline-block;
-            font-family: sans-serif; 
+            font-family: sans-serif;
         }
 
         &:hover::before {
             opacity: 0.7;
-            transform: translateX(-3px); // Sutil animación interactiva
+            transform: translateX(-3px);
         }
 
         h2 {
-            grid-column: 2; 
+            grid-column: 2;
             font-size: 18px;
             font-weight: 700;
-            color: $color-texto-oscuro; // CORREGIDO: Antes era blanco y no se veía
+            color: var(--text-primary);
             margin: 0;
             line-height: 1.2;
         }
-        
+
         p {
-            grid-column: 2; 
+            grid-column: 2;
             font-size: 12px;
-            color: $color-texto-mutado; 
+            color: var(--text-secondary);
             margin: 2px 0 0 0;
             line-height: 1.3;
         }
     }
 }
 
+/* ======================================================================
+   CONTENEDOR DEL MAPA
+   ====================================================================== */
 
 .map-main-container {
     flex-grow: 1;
@@ -75,49 +82,250 @@ $color-activo-nav: #ef4444;
 #map {
     width: 100%;
     height: 100%;
-    z-index: 1; // Se mantiene por debajo de la navegación inferior
+    z-index: 1;
+    background-color: var(--bg-app);
 }
 
-/* --- AJUSTES DE POPUPS DE LEAFLET --- */
+/* ======================================================================
+   POPUPS DE LEAFLET (con tema claro/oscuro)
+   ====================================================================== */
+
 .leaflet-popup-content-wrapper {
     border-radius: 12px;
     padding: 4px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.leaflet-popup-tip {
+    background: var(--card-bg);
 }
 
 .leaflet-popup-close-button {
     padding: 8px !important;
-    color: #94a3b8 !important;
+    color: var(--text-secondary) !important;
+    
+    &:hover {
+        color: var(--text-primary) !important;
+    }
 }
 
-/* --- MENÚ DE NAVEGACIÓN INFERIOR (PWA) --- */
+/* ======================================================================
+   CONTROLES DE LEAFLET (con tema claro/oscuro)
+   ====================================================================== */
+
+.leaflet-control-zoom {
+    .leaflet-control-zoom-in,
+    .leaflet-control-zoom-out {
+        background: var(--card-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--card-border);
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: var(--input-bg);
+            border-color: var(--primary-color);
+        }
+    }
+}
+
+.leaflet-control-attribution {
+    background: var(--card-bg) !important;
+    color: var(--text-secondary) !important;
+    border-top: 1px solid var(--card-border) !important;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+
+    a {
+        color: var(--primary-color) !important;
+    }
+}
+
+/* ======================================================================
+   NAVEGACIÓN INFERIOR (bottom-nav)
+   ====================================================================== */
+
 .bottom-nav {
     height: 65px;
-    background-color: #ffffff;
-    border-top: 1px solid #e2e8f0;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--card-border);
     display: flex;
     justify-content: space-around;
     align-items: center;
     flex-shrink: 0;
-    z-index: 999; // Asegura quedar siempre por encima de las capas del mapa
+    z-index: 999;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 
     .nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 4px;
-        color: #94a3b8;
+        color: var(--text-secondary);
         text-decoration: none;
         font-size: 11px;
         font-weight: 600;
-        transition: color 0.2s ease;
+        transition: all 0.2s ease;
+        padding: 4px 12px;
+        border-radius: 12px;
 
         i {
             font-size: 22px;
+            transition: all 0.2s ease;
+        }
+
+        &:hover {
+            color: var(--text-primary);
         }
 
         &.active {
-            color: $color-activo-nav; // Rojo para la pestaña seleccionada
+            color: #ef4444;
+
+            i {
+                transform: translateY(-2px);
+            }
+        }
+
+        &:active {
+            transform: scale(0.92);
         }
     }
+}
+
+/* ======================================================================
+   MODO OSCURO - Ajustes específicos para Leaflet
+   ====================================================================== */
+
+.dark-mode {
+    // Popups
+    .leaflet-popup-content-wrapper {
+        background: var(--card-bg);
+        color: var(--text-primary);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .leaflet-popup-tip {
+        background: var(--card-bg);
+    }
+
+    .leaflet-popup-close-button {
+        color: var(--text-secondary) !important;
+
+        &:hover {
+            color: var(--text-primary) !important;
+        }
+    }
+
+    // Controles de zoom
+    .leaflet-control-zoom {
+        .leaflet-control-zoom-in,
+        .leaflet-control-zoom-out {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-color: var(--card-border);
+
+            &:hover {
+                background: var(--input-bg);
+                border-color: var(--primary-color);
+            }
+        }
+    }
+
+    // Atribución
+    .leaflet-control-attribution {
+        background: var(--card-bg) !important;
+        color: var(--text-secondary) !important;
+        border-color: var(--card-border) !important;
+
+        a {
+            color: #60a5fa !important;
+        }
+    }
+
+    // Tiles del mapa (si usas capas personalizadas)
+    .leaflet-tile-pane {
+        filter: brightness(0.9) contrast(1.1);
+    }
+}
+
+/* ======================================================================
+   RESPONSIVE
+   ====================================================================== */
+
+@media (max-width: 480px) {
+    .app-header {
+        padding: 12px 14px;
+
+        .header-content {
+            gap: 12px;
+
+            &::before {
+                font-size: 18px;
+            }
+
+            h2 {
+                font-size: 16px;
+            }
+
+            p {
+                font-size: 11px;
+            }
+        }
+    }
+
+    .bottom-nav {
+        height: 58px;
+
+        .nav-item {
+            font-size: 10px;
+            padding: 2px 8px;
+
+            i {
+                font-size: 20px;
+            }
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .app-header {
+        padding: 18px 24px;
+
+        .header-content {
+            h2 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 13px;
+            }
+        }
+    }
+
+    .bottom-nav {
+        height: 72px;
+
+        .nav-item {
+            font-size: 12px;
+
+            i {
+                font-size: 24px;
+            }
+        }
+    }
+}
+
+/* ======================================================================
+   TRANSICIONES SUAVES PARA EL TEMA
+   ====================================================================== */
+
+.app-header,
+.bottom-nav,
+.leaflet-popup-content-wrapper,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }

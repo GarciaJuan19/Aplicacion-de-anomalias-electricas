@@ -1,9 +1,6 @@
+@use 'styles' as *;
+
 // --- VARIABLES DE DISEÑO ---
-$primary-color: #0045cb;
-$text-dark: #333333;
-$text-muted: #555555;
-$border-color: #d1d5db;
-$bg-body: #f8fafc;
 $font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
 // --- ESTILOS BASE ---
@@ -15,22 +12,27 @@ $font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
 body.auth-body {
     font-family: $font-family;
-    background-color: $bg-body;
+    background-color: var(--bg-app);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease;
 }
 
 // --- CONTENEDOR PRINCIPAL ---
 .auth-container {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     padding: 40px 30px;
     border-radius: 12px;
     width: 100%;
     max-width: 450px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--card-border);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 
     // --- HEADER ---
     .auth-header {
@@ -41,24 +43,26 @@ body.auth-body {
             align-items: center;
             gap: 10px;
             margin-bottom: 12px;
-            color: $primary-color;
+            color: var(--primary-color);
 
-            // Ocultamos el icono o el texto si prefieres basarte solo en la imagen, 
-            // pero para mantener tu HTML los dejamos con un estilo limpio y corporativo.
             .logo-icon {
                 font-size: 2rem;
+                transition: color 0.3s ease;
             }
 
             h1 {
                 font-size: 2rem;
                 font-weight: 700;
+                color: var(--text-primary);
+                transition: color 0.3s ease;
             }
         }
 
         .auth-subtitle {
             font-size: 0.95rem;
-            color: $text-muted;
+            color: var(--text-secondary);
             line-height: 1.5;
+            transition: color 0.3s ease;
         }
     }
 
@@ -68,11 +72,9 @@ body.auth-body {
         flex-direction: column;
         gap: 20px;
 
-        // Estructura grid para poner Contraseña y Confirmar lado a lado
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        
-        // Los grupos normales ocupan todo el ancho (2 columnas)
+
         .input-group {
             grid-column: span 2;
             display: flex;
@@ -82,9 +84,10 @@ body.auth-body {
             label {
                 font-size: 0.8rem;
                 font-weight: 700;
-                color: $text-muted;
+                color: var(--text-secondary);
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
+                transition: color 0.3s ease;
             }
 
             .input-field {
@@ -96,33 +99,35 @@ body.auth-body {
                     position: absolute;
                     left: 14px;
                     font-size: 1.3rem;
-                    color: $text-muted;
+                    color: var(--input-icon-color);
                     pointer-events: none;
+                    transition: color 0.3s ease;
                 }
 
                 input {
                     width: 100%;
                     padding: 14px 14px 14px 45px;
-                    border: 1px solid $border-color;
+                    border: 1px solid var(--border-color);
                     border-radius: 6px;
                     font-size: 1rem;
-                    color: $text-dark;
-                    background-color: #fafafa;
-                    transition: border-color 0.2s, background-color 0.2s;
+                    color: var(--text-primary);
+                    background-color: var(--input-bg);
+                    transition: border-color 0.2s,
+                                background-color 0.2s,
+                                box-shadow 0.2s,
+                                color 0.3s ease;
 
                     &::placeholder {
-                        color: #9ca3af;
+                        color: var(--text-secondary);
                     }
 
                     &:focus {
                         outline: none;
-                        border-color: $primary-color;
-                        background-color: #ffffff;
+                        border-color: var(--primary-color);
+                        background-color: var(--input-focus-bg);
+                        box-shadow: 0 0 0 4px var(--accent-light);
                     }
 
-                    // 🔵 Oculta el ícono nativo de "revelar contraseña" que agregan
-                    // algunos navegadores (Edge/IE) dentro de inputs type="password",
-                    // para que no se encime ni se duplique con nuestros íconos bx-*.
                     &[type="password"]::-ms-reveal,
                     &[type="password"]::-ms-clear {
                         display: none;
@@ -131,32 +136,29 @@ body.auth-body {
                     }
                 }
 
-                // Botón para mostrar/ocultar contraseña incluido en tu HTML
                 .btn-toggle-password {
                     position: absolute;
                     right: 14px;
                     background: none;
                     border: none;
                     cursor: pointer;
-                    color: $text-muted;
+                    color: var(--input-icon-color);
                     font-size: 1.2rem;
                     display: flex;
                     align-items: center;
-                    
+                    transition: color 0.3s ease;
+
                     &:hover {
-                        color: $primary-color;
+                        color: var(--primary-color);
                     }
                 }
             }
         }
 
-        // Target específico para las contraseñas (para que se dividan a la mitad como en la imagen)
-        // Buscamos los grupos que contienen el ID de password o confirmar
         .input-group:has(#reg-password),
         .input-group:has(#reg-confirmar) {
             grid-column: span 1;
-            
-            // Ajustamos el padding derecho en el input de contraseña para que no tape el icono de "ver"
+
             .input-field input {
                 padding-right: 40px;
             }
@@ -173,16 +175,16 @@ body.auth-body {
                 gap: 12px;
                 cursor: pointer;
                 font-size: 0.9rem;
-                color: $text-muted;
+                color: var(--text-secondary);
                 line-height: 1.4;
+                transition: color 0.3s ease;
 
-                // Escondemos el checkbox nativo para usar el tuyo personalizado (checkbox-custom)
                 input[type="checkbox"] {
                     display: none;
 
                     &:checked + .checkbox-custom {
-                        background-color: $primary-color;
-                        border-color: $primary-color;
+                        background-color: var(--primary-color);
+                        border-color: var(--primary-color);
 
                         &::after {
                             display: block;
@@ -190,18 +192,17 @@ body.auth-body {
                     }
                 }
 
-                // Caja del Checkbox personalizado
                 .checkbox-custom {
                     width: 20px;
                     height: 20px;
-                    border: 1px solid $border-color;
+                    border: 1px solid var(--border-color);
                     border-radius: 4px;
                     flex-shrink: 0;
                     position: relative;
                     margin-top: 2px;
                     transition: all 0.2s;
+                    background-color: var(--card-bg);
 
-                    // El check (✓) blanco interno
                     &::after {
                         content: '';
                         position: absolute;
@@ -210,7 +211,7 @@ body.auth-body {
                         top: 2px;
                         width: 5px;
                         height: 10px;
-                        border: solid white;
+                        border: solid #ffffff;
                         border-width: 0 2px 2px 0;
                         transform: rotate(45deg);
                     }
@@ -218,12 +219,14 @@ body.auth-body {
 
                 .label-text {
                     .auth-link {
-                        color: $primary-color;
+                        color: var(--primary-color);
                         text-decoration: none;
                         font-weight: 600;
+                        transition: color 0.3s ease;
 
                         &:hover {
                             text-decoration: underline;
+                            color: var(--primary-hover);
                         }
                     }
                 }
@@ -233,7 +236,7 @@ body.auth-body {
         // --- BOTÓN REGISTRAR ---
         .btn-auth-submit {
             grid-column: span 2;
-            background-color: $primary-color;
+            background-color: var(--primary-color);
             color: #ffffff;
             border: none;
             padding: 16px;
@@ -241,11 +244,23 @@ body.auth-body {
             font-weight: 700;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 10px;
+            transition: background-color 0.2s, transform 0.15s;
 
             &:hover {
-                background-color: $primary-color;
+                background-color: var(--primary-hover);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+            }
+
+            &:active {
+                transform: scale(0.98);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none !important;
+                box-shadow: none !important;
             }
         }
     }
@@ -256,28 +271,25 @@ body.auth-body {
         text-align: center;
         position: relative;
 
-        // Añadimos el separador "o" que aparece en tu imagen antes del enlace de login
         &::before {
             content: 'o';
             display: block;
             text-align: center;
-            color: $text-muted;
+            color: var(--text-secondary);
             margin-bottom: 25px;
             position: relative;
             font-size: 0.9rem;
-            
-            // Líneas laterales del separador "o"
-            background: #ffffff;
+            background: var(--card-bg);
             width: 30px;
             margin-left: auto;
             margin-right: auto;
             z-index: 2;
+            transition: color 0.3s ease, background-color 0.3s ease;
         }
 
-        // Línea horizontal gris por detrás de la "o"
         display: flex;
         flex-direction: column;
-        
+
         &::after {
             content: '';
             position: absolute;
@@ -285,25 +297,169 @@ body.auth-body {
             left: 0;
             right: 0;
             height: 1px;
-            background-color: $border-color;
+            background-color: var(--border-color);
             z-index: 1;
+            transition: background-color 0.3s ease;
         }
 
         p {
             font-size: 0.95rem;
-            color: $text-dark;
-            z-index: 2; // Asegura que quede por encima de la línea si se cruzan
+            color: var(--text-primary);
+            z-index: 2;
+            transition: color 0.3s ease;
 
             .auth-link-action {
-                color: $primary-color;
+                color: var(--primary-color);
                 text-decoration: none;
                 font-weight: 700;
+                transition: color 0.3s ease;
 
                 &:hover {
                     text-decoration: underline;
+                    color: var(--primary-hover);
                 }
             }
         }
+    }
+}
+
+// --- MODALES DE TÉRMINOS Y PRIVACIDAD ---
+.modal-panel-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.25s ease;
+
+    &.active {
+        display: flex !important;
+    }
+
+    .modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 28px 24px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        animation: slideUp 0.3s ease;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+
+        .modal-title {
+            margin: 0 0 12px 0;
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s ease;
+
+            i {
+                color: var(--primary-color);
+                font-size: 24px;
+                transition: color 0.3s ease;
+            }
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 20px;
+            padding-right: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: left;
+            transition: color 0.3s ease;
+
+            &::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: var(--border-color);
+                border-radius: 10px;
+                transition: background-color 0.3s ease;
+            }
+
+            p {
+                margin: 0 0 12px 0;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                strong {
+                    color: var(--text-primary);
+                    transition: color 0.3s ease;
+                }
+            }
+        }
+
+        .btn-modal-close {
+            background: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            &:hover {
+                background: var(--primary-hover);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+            }
+
+            &:active {
+                transform: scale(0.97);
+            }
+        }
+    }
+}
+
+// --- ANIMACIONES ---
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -315,13 +471,246 @@ body.auth-body {
 
     .auth-container {
         padding: 25px 20px;
-        
+
         .auth-form {
-            // En pantallas muy chicas, las contraseñas se apilan verticalmente
             .input-group:has(#reg-password),
             .input-group:has(#reg-confirmar) {
                 grid-column: span 2;
             }
         }
+
+        .auth-header {
+            .logo-area {
+                .logo-icon {
+                    font-size: 1.6rem;
+                }
+
+                h1 {
+                    font-size: 1.6rem;
+                }
+            }
+
+            .auth-subtitle {
+                font-size: 0.85rem;
+            }
+        }
+
+        .auth-form {
+            .input-group {
+                label {
+                    font-size: 0.7rem;
+                }
+
+                .input-field {
+                    input {
+                        padding: 12px 12px 12px 40px;
+                        font-size: 0.9rem;
+                    }
+
+                    .input-icon {
+                        font-size: 1.1rem;
+                        left: 12px;
+                    }
+                }
+            }
+
+            .btn-auth-submit {
+                padding: 14px;
+                font-size: 0.95rem;
+            }
+        }
+
+        .auth-footer {
+            p {
+                font-size: 0.85rem;
+            }
+        }
     }
+
+    .modal-panel-overlay {
+        padding: 16px;
+
+        .modal-content {
+            padding: 20px 16px;
+            max-height: 85vh;
+
+            .modal-title {
+                font-size: 18px;
+            }
+
+            .modal-body {
+                font-size: 13px;
+            }
+
+            .btn-modal-close {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+@media (min-width: 769px) {
+    .auth-container {
+        padding: 48px 40px;
+        border-radius: 16px;
+
+        .auth-header {
+            .logo-area {
+                .logo-icon {
+                    font-size: 2.4rem;
+                }
+
+                h1 {
+                    font-size: 2.4rem;
+                }
+            }
+        }
+    }
+}
+
+// --- MODO OSCURO - Ajustes específicos ---
+.dark-mode {
+    .auth-container {
+        background: var(--card-bg);
+        border-color: var(--card-border);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .auth-header {
+        .logo-area {
+            .logo-icon {
+                color: #60a5fa;
+            }
+
+            h1 {
+                color: #60a5fa;
+            }
+        }
+    }
+
+    .input-field {
+        input {
+            background: var(--input-bg);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+
+            &:focus {
+                background: var(--input-focus-bg);
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.15);
+            }
+        }
+
+        .btn-toggle-password {
+            color: var(--text-secondary);
+
+            &:hover {
+                color: #60a5fa;
+            }
+        }
+    }
+
+    .checkbox-label {
+        .checkbox-custom {
+            background: var(--input-bg);
+            border-color: var(--border-color);
+        }
+
+        input[type="checkbox"]:checked + .checkbox-custom {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .label-text .auth-link {
+            color: #60a5fa;
+
+            &:hover {
+                color: #93bbfc;
+            }
+        }
+    }
+
+    .auth-footer {
+        &::before {
+            background: var(--card-bg);
+            color: var(--text-secondary);
+        }
+
+        &::after {
+            background-color: var(--border-color);
+        }
+
+        p .auth-link-action {
+            color: #60a5fa;
+
+            &:hover {
+                color: #93bbfc;
+            }
+        }
+    }
+
+    .modal-panel-overlay {
+        background: rgba(0, 0, 0, 0.7);
+
+        .modal-content {
+            background: var(--card-bg);
+            border-color: var(--card-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+
+            .modal-title {
+                color: var(--text-primary);
+
+                i {
+                    color: #60a5fa;
+                }
+            }
+
+            .modal-body {
+                color: var(--text-secondary);
+
+                p strong {
+                    color: var(--text-primary);
+                }
+            }
+
+            .btn-modal-close {
+                background: var(--primary-color);
+
+                &:hover {
+                    background: var(--primary-hover);
+                }
+            }
+        }
+    }
+
+    .btn-auth-submit {
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 82, 204, 0.4);
+        }
+    }
+}
+
+// --- TRANSICIONES SUAVES PARA EL TEMA ---
+.auth-container,
+.auth-header .logo-area h1,
+.auth-header .logo-area .logo-icon,
+.auth-subtitle,
+.input-field input,
+.input-field .input-icon,
+.input-field .btn-toggle-password,
+.checkbox-label,
+.checkbox-custom,
+.auth-link,
+.auth-link-action,
+.auth-footer p,
+.modal-content,
+.modal-title,
+.modal-body,
+.modal-body p strong,
+.btn-modal-close {
+    transition: background-color 0.3s ease,
+                border-color 0.3s ease,
+                color 0.3s ease,
+                box-shadow 0.3s ease;
 }

@@ -26,7 +26,8 @@ const urlsToCache = [
   '/js/admin/mapa-admin.js',
   '/js/admin/perfil-admin.js', // ✅ corregido
   '/js/admin.js',
-  '/img/Logo3.png'
+  '/img/Logo3.png',
+  'server.js',
 ];
 
 // ================================================
@@ -96,5 +97,50 @@ self.addEventListener('fetch', event => {
         // Sin conexión — usar cache
         return caches.match(event.request);
       })
+  );
+});
+// sw.js
+
+// 1. Escuchar el evento Push que envía el servidor
+self.addEventListener('push', event => {
+  let data = { title: 'Actualización de Anomalías', body: 'Cambio de estado en el sistema.' };
+
+  if (event.data) {
+    data = event.data.json();
+  }
+
+  const opciones = {
+    body: data.body,
+    icon: '/img/icon-notificacion.png', // Puedes apuntar a una imagen dentro de tu carpeta img/
+    badge: '/img/badge.png',            // Icono pequeño de estado (blanco y negro recomendado)
+    vibrate: [200, 100, 200],
+    data: {
+      url: data.url // Adjuntamos la URL dinámica en los metadatos de la alerta
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, opciones)
+  );
+});
+
+// Dentro de tu sw.js
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+
+  // Forzamos a que abra la URL apuntando al puerto de tu Live Server (5500)
+  const urlDestino = `http://127.0.0.1:5500${event.notification.data.url}`;
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (let client of windowClients) {
+        if (client.url === urlDestino && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlDestino);
+      }
+    })
   );
 });

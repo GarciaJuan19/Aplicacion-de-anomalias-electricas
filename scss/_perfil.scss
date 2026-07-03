@@ -1,159 +1,341 @@
 /* ==========================================================================
-   ESTILOS ESPECÍFICOS DE LA PANTALLA DE PERFIL
+   PERFIL - Adaptado al sistema global de temas
    ========================================================================== */
-$color-principal: #0a46d1;
-$color-texto-oscuro: #0f172a;
-$color-texto-mutado: #64748b;
-$color-peligro: #ef4444;
 
 .profile-main-container {
-    flex-grow: 1;
+
+    flex: 1;
+
     padding: 20px 16px;
-    overflow-y: auto; // Permite scroll vertical si hay muchas opciones
+
+    overflow-y: auto;
+
     display: flex;
+
     flex-direction: column;
+
     gap: 24px;
+
     width: 100%;
-    max-width: 600px; // Centrado y controlado en pantallas web
+
+    max-width: 600px;
+
     margin: 0 auto;
+
     box-sizing: border-box;
+
 }
 
-/* Tarjeta de Información de Usuario */
+/* --------------------------------------------------------------------------
+   TARJETA DEL USUARIO
+-------------------------------------------------------------------------- */
+
 .profile-card {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--card-border);
+
+    border-radius: 18px;
+
     padding: 20px;
+
     display: flex;
+
     align-items: center;
+
     gap: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+
+    transition: .25s;
 
     .profile-avatar {
+
         font-size: 56px;
-        color: $color-principal;
+
+        color: var(--primary-color);
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
     }
 
     .profile-info {
+
         h3 {
+
             margin: 0;
+
             font-size: 18px;
+
             font-weight: 700;
-            color: $color-texto-oscuro;
+
+            color: var(--text-primary);
+
         }
+
         p {
+
             margin: 4px 0 0;
+
             font-size: 13px;
-            color: $color-texto-mutado;
+
+            color: var(--text-secondary);
+
         }
+
     }
+
 }
 
-/* Listado de Opciones del Menú */
+/* --------------------------------------------------------------------------
+   MENÚ
+-------------------------------------------------------------------------- */
+
 .profile-menu {
+
     display: flex;
+
     flex-direction: column;
-    gap: 8px;
+
+    gap: 10px;
 
     .menu-section-title {
+
         font-size: 11px;
+
         font-weight: 700;
+
         text-transform: uppercase;
-        color: $color-texto-mutado;
-        letter-spacing: 0.8px;
+
+        letter-spacing: .8px;
+
+        color: var(--text-secondary);
+
         margin: 12px 0 4px 4px;
+
     }
 
     .menu-item {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 14px 16px;
+
+        background: var(--card-bg);
+
+        border: 1px solid var(--card-border);
+
+        border-radius: 14px;
+
+        padding: 15px 16px;
+
         display: flex;
+
         align-items: center;
+
         text-decoration: none;
-        transition: background-color 0.15s ease;
+
+        transition: .25s;
+
+        box-shadow: 0 4px 12px rgba(0,0,0,.04);
+
+        &:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 8px 18px rgba(0,0,0,.08);
+
+        }
 
         &:active {
-            background-color: #f8fafc;
+
+            transform: scale(.98);
+
         }
 
         .icon-left {
+
             font-size: 22px;
-            color: $color-principal;
+
+            color: var(--primary-color);
+
             margin-right: 14px;
+
         }
 
         .menu-text {
+
+            flex: 1;
+
             font-size: 14px;
+
             font-weight: 500;
-            color: $color-texto-oscuro;
-            flex-grow: 1;
+
+            color: var(--text-primary);
+
         }
 
         .icon-right {
+
             font-size: 18px;
-            color: #cbd5e1;
+
+            color: var(--input-icon-color);
+
         }
+
     }
+
 }
 
-/* Botón Cerrar Sesión */
+/* --------------------------------------------------------------------------
+   BOTÓN CERRAR SESIÓN
+-------------------------------------------------------------------------- */
+
 .btn-logout {
+
     margin-top: 24px;
-    background-color: rgba($color-peligro, 0.08);
-    border: 1px solid rgba($color-peligro, 0.2);
-    color: $color-peligro;
-    padding: 14px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+
     width: 100%;
-    transition: background-color 0.15s ease;
 
-    i {
-        font-size: 20px;
-    }
+    padding: 14px;
 
-    &:active {
-        background-color: rgba($color-peligro, 0.15);
-    }
-}
-.avatar-display-container {
-    width: 100px;
-    height: 100px;
-    background-color: #e2e8f0;
-    border-radius: 50%;
+    border-radius: 14px;
+
+    border: 1px solid rgba(239,68,68,.25);
+
+    background: rgba(239,68,68,.08);
+
+    color: #ef4444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
+    gap: 8px;
+
+    transition: .25s;
+
+    i{
+
+        font-size:20px;
+
+    }
+
+    &:hover{
+
+        background: rgba(239,68,68,.14);
+
+    }
+
+    &:active{
+
+        transform: scale(.98);
+
+    }
+
+}
+
+/* --------------------------------------------------------------------------
+   AVATAR
+-------------------------------------------------------------------------- */
+
+.avatar-display-container {
+
+    width: 100px;
+
+    height: 100px;
+
+    border-radius: 50%;
+
     overflow: hidden;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: var(--input-bg);
+
+    border: 3px solid var(--card-border);
+
+    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+
     position: relative;
 
-    // Estilo del icono por defecto
-    i.bx-user {
-        font-size: 54px;
-        color: #94a3b8;
+    i.bx-user{
+
+        font-size:54px;
+
+        color: var(--input-icon-color);
+
     }
 
-    // Estilo de la imagen de perfil recortada de manera circular
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+    img{
+
+        width:100%;
+
+        height:100%;
+
+        object-fit:cover;
+
     }
 
-    // Clase auxiliar para ocultar de manera limpia
-    .hidden {
-        display: none !important;
+    .hidden{
+
+        display:none !important;
+
     }
+
+}
+
+/* --------------------------------------------------------------------------
+   MODO OSCURO
+-------------------------------------------------------------------------- */
+
+.dark-mode{
+
+    .profile-card{
+
+        box-shadow: 0 10px 28px rgba(0,0,0,.35);
+
+    }
+
+    .profile-menu .menu-item{
+
+        box-shadow: 0 6px 18px rgba(0,0,0,.25);
+
+    }
+
+    .profile-menu .menu-item:hover{
+
+        box-shadow: 0 10px 26px rgba(0,0,0,.35);
+
+    }
+
+    .avatar-display-container{
+
+        background: var(--input-bg);
+
+        border-color: var(--card-border);
+
+    }
+
+    .btn-logout{
+
+        background: rgba(239,68,68,.12);
+
+        border-color: rgba(239,68,68,.35);
+
+    }
+
 }

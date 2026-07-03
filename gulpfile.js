@@ -1,48 +1,62 @@
 const { src, dest, watch, series } = require('gulp');
-const sassCompiler = require('sass');
-const gulpSass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
+const fs = require('fs');
 const path = require('path');
 
-const sass = gulpSass(sassCompiler);
-
-// Tarea para compilar SASS utilizando la nueva ruta dentro de la carpeta /scss
+// Compilar SCSS
 function compileSass() {
-    
-    const entrada = path.resolve(__dirname, 'scss', 'main.scss');
-    const salida = path.resolve(__dirname, 'css');
 
-    return src(entrada)
+    const inputFile = './scss/main.scss';
+    const outputFolder = './css';
+
+    // Crear la carpeta css si no existe
+    if (!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder, { recursive: true });
+        console.log('✔ Carpeta css creada.');
+    }
+
+    // Verificar que exista main.scss
+    if (!fs.existsSync(path.resolve(inputFile))) {
+        console.error('❌ No se encontró el archivo: scss/main.scss');
+        return Promise.resolve();
+    }
+
+    console.log('🔄 Compilando SCSS...');
+
+    return src(inputFile, { allowEmpty: false })
         .pipe(sourcemaps.init())
-        .pipe(sass({ outputStyle: 'expanded' }).on('error', sass.logError))
+        .pipe(
+            sass({
+                outputStyle: 'expanded'
+            }).on('error', function (err) {
+                console.error('\n❌ Error de Sass:\n');
+                console.error(err.formatted || err.message);
+                this.emit('end');
+            })
+        )
         .pipe(rename('style.css'))
         .pipe(sourcemaps.write('.'))
-        .pipe(dest(salida));
+        .pipe(dest(outputFolder));
 }
 
+// Observar cambios
+function watchFiles() {
 
-function watchFiles(done) {
-    
-    const rutaAObservar = path.resolve(__dirname, 'scss', '**/*.scss');
-    
-    
-    const watcher = watch(rutaAObservar, { usePolling: true, interval: 500 }, compileSass);
+    console.log('👀 Observando cambios en SCSS...');
 
-    // Manejo de eventos para ver en consola qué parcial se modificó
-    watcher.on('change', function(filePath) {
-        console.log(`Archivo modificado: ${path.basename(filePath)} -> Recompilando...`);
-    });
-
-    done(); 
+    watch('./scss/**/*.scss', compileSass)
+        .on('change', function (file) {
+            console.log(`📄 Modificado: ${file}`);
+        });
 }
 
-// ✅ NUEVA TAREA "build" para Netlify
-function build(done) {
-    compileSass();
-    done();
-}
+// Build
+const build = series(compileSass);
 
+// Exportaciones
 exports.compileSass = compileSass;
-exports.build = build;        // <-- AGREGADO
+exports.build = build;
+exports.watch = watchFiles;
 exports.default = series(compileSass, watchFiles);

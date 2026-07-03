@@ -1,24 +1,19 @@
-$primary-color: #0066de;
-$bg-light: #f5f7fb;
-$text-dark: #0f172a;
-$text-muted: #64748b;
-$white: #ffffff;
 $radius-lg: 24px;
 $radius-md: 16px;
 
 .app-container {
-    background-color: $bg-light;
+    background-color: var(--bg-app);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
 .menu-header {
-    background: linear-gradient(135deg, $primary-color 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
     padding: 40px 24px 30px;
     border-bottom-left-radius: $radius-lg;
     border-bottom-right-radius: $radius-lg;
-    box-shadow: 0 12px 28px rgba(0, 102, 222, 0.18);
+    box-shadow: 0 12px 28px rgba(0, 82, 204, 0.18);
 
     .user-profile-section {
         display: flex;
@@ -29,7 +24,7 @@ $radius-md: 16px;
     .avatar-container {
         width: 56px;
         height: 56px;
-        background-color: rgba($white, 0.14);
+        background-color: rgba(255, 255, 255, .14);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -44,12 +39,12 @@ $radius-md: 16px;
     }
 
     .user-welcome {
-        color: $white;
+        color: #fff;
 
         span {
             display: block;
             font-size: 14px;
-            opacity: 0.85;
+            opacity: .85;
             font-weight: 400;
         }
 
@@ -57,7 +52,40 @@ $radius-md: 16px;
             font-size: 24px;
             font-weight: 700;
             margin: 2px 0 0;
-            color: $white;
+            color: #fff;
+        }
+    }
+
+    /* Botón modo oscuro */
+    .btn-toggle {
+        margin-left: auto;
+        width: 48px;
+        height: 48px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255,255,255,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all .25s ease;
+        backdrop-filter: blur(8px);
+        flex-shrink: 0;
+
+        &:hover {
+            background: rgba(255,255,255,.28);
+            transform: scale(1.05);
+        }
+
+        &:active {
+            transform: scale(.95);
+        }
+
+        img {
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+            border-radius: 50%;
         }
     }
 }
@@ -66,113 +94,164 @@ $radius-md: 16px;
     padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
 }
 
 .menu-card {
-    background-color: $white;
-    border: 1px solid rgba(226, 232, 240, 0.9);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: $radius-md;
-    padding: 16px;
+    padding: 18px;
     display: flex;
     align-items: center;
-    text-decoration: none;
-    transition: transform 0.16s ease, box-shadow 0.16s ease;
-    cursor: pointer;
     width: 100%;
+    text-decoration: none;
+    cursor: pointer;
     text-align: left;
-    outline: none;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    transition: .2s ease;
+    box-shadow: 0 10px 22px rgba(0,0,0,.08);
 
     &:hover,
     &:focus-visible {
-        transform: translateY(-1px);
-        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.10);
+        transform: translateY(-2px);
+        box-shadow: 0 16px 30px rgba(0,0,0,.15);
     }
 
     &:active {
-        transform: scale(0.98);
-        background-color: #fafafa;
+        transform: scale(.98);
+        background: var(--input-bg);
     }
 
     .card-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
         display: flex;
-        align-items: center;
         justify-content: center;
-        font-size: 22px;
+        align-items: center;
         margin-right: 16px;
         flex-shrink: 0;
+        font-size: 26px;
 
-        &.icon-alert { background-color: rgba($primary-color, 0.10); color: $primary-color; }
-        &.icon-reports { background-color: #e0f2fe; color: #0369a1; }
-        &.icon-map { background-color: #f0fdf4; color: #15803d; }
-        &.icon-profile { background-color: #f0fdfa; color: #0f766e; }
-        &.icon-logout { background-color: #fef2f2; color: #dc2626; }
+        &.icon-alert,
+        &.icon-reports,
+        &.icon-map,
+        &.icon-profile {
+            background: var(--accent-light);
+            color: var(--primary-color);
+        }
+
+        &.icon-logout {
+            background: rgba(239,68,68,.12);
+            color: #ef4444;
+        }
     }
 
     .card-info {
-        flex-grow: 1;
+        flex: 1;
 
         h3 {
-            font-size: 16px;
-            color: $text-dark;
+            font-size: 17px;
+            color: var(--text-primary);
             font-weight: 700;
-            margin: 0 0 2px;
+            margin: 0 0 4px;
         }
 
         p {
-            font-size: 13px;
-            color: $text-muted;
-            font-weight: 400;
+            font-size: 14px;
+            color: var(--text-secondary);
             margin: 0;
         }
     }
 
     .arrow-next {
-        font-size: 20px;
-        color: #94a3b8;
-        margin-left: 8px;
+        color: var(--text-secondary);
+        font-size: 24px;
+        margin-left: 12px;
     }
 }
 
 .card-logout {
-    border: 1px solid rgba(254, 226, 226, 0.6);
     font-family: inherit;
 
     &:active {
-        background-color: #fff5f5;
+        background: var(--input-bg);
     }
 }
 
+/* Avatar */
+
 .menu-avatar-display {
-    width: 60px;          // Cambia el tamaño según tu diseño actual
+    width: 60px;
     height: 60px;
     border-radius: 50%;
-    overflow: hidden;     // Recorta los bordes de la imagen sobrante
+    overflow: hidden;
     display: flex;
-    align-items: center;
     justify-content: center;
-    background-color: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    align-items: center;
+    background: var(--logo-bg);
+    border: 2px solid rgba(255,255,255,.25);
 
     img {
         width: 100%;
         height: 100%;
-        object-fit: cover; // 🌟 TRUCO: Hace que la imagen llene el círculo adaptándose proporcionalmente
+        object-fit: cover;
     }
 
-    // 🔵 Ícono de respaldo que se muestra cuando el usuario no tiene foto de perfil
     .avatar-fallback-icon {
-        font-size: 28px;
-        color: $primary-color;
-        background-color: rgba($primary-color, 0.10);
         width: 100%;
         height: 100%;
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        color: var(--primary-color);
+        background: var(--accent-light);
+    }
+}
+
+/* ========= MODO OSCURO ========= */
+
+.dark-mode {
+
+    .app-container {
+        background: #111827;
+    }
+
+    .menu-card {
+        background: #1f2937;
+        border-color: #374151;
+        box-shadow: 0 10px 28px rgba(0,0,0,.35);
+
+        &:hover {
+            background: #263445;
+        }
+    }
+
+    .card-info {
+
+        h3 {
+            color: #fff;
+        }
+
+        p {
+            color: #d1d5db;
+        }
+    }
+
+    .arrow-next {
+        color: #cbd5e1;
+    }
+
+    .btn-toggle {
+        background: rgba(255,255,255,.15);
+
+        &:hover {
+            background: rgba(255,255,255,.25);
+        }
+    }
+
+    .menu-avatar-display {
+        border-color: rgba(255,255,255,.12);
     }
 }

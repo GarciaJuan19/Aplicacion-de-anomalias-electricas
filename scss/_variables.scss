@@ -1,35 +1,135 @@
-// 1. Colores globales (tomados de tu pantalla de Registro)
-$color-principal: #0a46d1;      // El azul vibrante de los botones
-$color-texto-oscuro: #2d3748;   // Para los labels (Nombre completo, Correo...)
-$color-texto-mutado: #718096;  // Para los placeholders y texto secundario
-$color-borde: #e2e8f0;          // El gris sutil de los inputs
-$color-fondo-input: #f8fafc;    // Fondo ligeramente gris si aplica, o blanco #ffffff
-$color-blanco: #ffffff;
+@use "variables";
 
-// 2. Tipografía y Radios
-$fuente-base: 'Inter', system-ui, -apple-system, sans-serif;
-$border-radius-m: 12px;         // El redondeado suave de tus tarjetas y botones
-$border-radius-s: 8px;          // Para los inputs individuales
+/* ======================================================================
+   VARIABLES SASS
+====================================================================== */
 
-// 3. Mixin para reutilizar el estilo de los campos de texto/selects
-@mixin estilo-input {
-  width: 100%;
-  padding: 14px 16px;
-  font-family: $fuente-base;
-  font-size: 14px;
-  color: $color-texto-oscuro;
-  background-color: $color-blanco;
-  border: 1px solid $color-borde;
-  border-radius: $border-radius-s;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  outline: none;
+$fuente-base: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  &::placeholder {
-    color: $color-texto-mutado;
-  }
+$border-radius-s: 8px;
+$border-radius-m: 12px;
+$border-radius-l: 18px;
 
-  &:focus {
-    border-color: $color-principal;
-    box-shadow: 0 0 0 3px rgba($color-principal, 0.15);
-  }
+/* ======================================================================
+   RESET
+====================================================================== */
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+body{
+
+    font-family:$fuente-base;
+
+    background:var(--bg-app);
+
+    color:var(--text-primary);
+
+}
+
+/* ======================================================================
+   MIXIN INPUT
+====================================================================== */
+
+@mixin estilo-input{
+
+    width:100%;
+
+    padding:14px 16px;
+
+    font-family:$fuente-base;
+
+    font-size:14px;
+
+    color:var(--text-primary);
+
+    background:var(--input-bg);
+
+    border:1px solid var(--border-color);
+
+    border-radius:$border-radius-s;
+
+    outline:none;
+
+    transition:.25s;
+
+    &::placeholder{
+
+        color:var(--text-secondary);
+
+    }
+
+    &:focus{
+
+        background:var(--input-focus-bg);
+
+        border-color:var(--primary-color);
+
+        box-shadow:0 0 0 4px var(--accent-light);
+
+    }
+
+}
+
+/* ======================================================================
+   BOTÓN PRIMARIO
+====================================================================== */
+
+@mixin boton-principal{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:$border-radius-s;
+
+    background:var(--primary-color);
+
+    color:#fff;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.25s;
+
+    &:hover{
+
+        background:var(--primary-hover);
+
+    }
+
+    &:active{
+
+        transform:scale(.98);
+
+    }
+
+}
+
+/* ======================================================================
+   TARJETA
+====================================================================== */
+
+@mixin card{
+
+    background:var(--card-bg);
+
+    border:1px solid var(--card-border);
+
+    border-radius:$border-radius-m;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+
 }

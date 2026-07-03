@@ -70,38 +70,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    //  LÓGICA: PANELES MODALES (TÉRMINOS Y PRIVACIDAD)
+    //  LÓGICA: PANELES MODALES (USANDO .active)
     // ==========================================
     if (linkTerminos && modalTerminos) {
         linkTerminos.addEventListener('click', (e) => {
             e.preventDefault();
-            modalTerminos.style.display = 'flex';
+            modalTerminos.classList.add('active'); // Aplica estilos SCSS del modo oscuro/claro
         });
     }
 
     if (linkPrivacidad && modalPrivacidad) {
         linkPrivacidad.addEventListener('click', (e) => {
             e.preventDefault();
-            modalPrivacidad.style.display = 'flex';
+            modalPrivacidad.classList.add('active'); // Aplica estilos SCSS del modo oscuro/claro
         });
     }
 
     if (btnCerrarTerminos && modalTerminos) {
         btnCerrarTerminos.addEventListener('click', () => {
-            modalTerminos.style.display = 'none';
+            modalTerminos.classList.remove('active');
         });
     }
 
     if (btnCerrarPrivacidad && modalPrivacidad) {
         btnCerrarPrivacidad.addEventListener('click', () => {
-            modalPrivacidad.style.display = 'none';
+            modalPrivacidad.classList.remove('active');
         });
     }
 
     // Cerrar haciendo clic en el fondo difuminado (fuera de la caja blanca)
     window.addEventListener('click', (e) => {
-        if (e.target === modalTerminos) modalTerminos.style.display = 'none';
-        if (e.target === modalPrivacidad) modalPrivacidad.style.display = 'none';
+        if (e.target === modalTerminos) modalTerminos.classList.remove('active');
+        if (e.target === modalPrivacidad) modalPrivacidad.classList.remove('active');
     });
 
 
@@ -114,68 +114,43 @@ document.addEventListener('DOMContentLoaded', () => {
             overlayExistente.remove();
         }
 
+        // Creamos el modal usando las mismas clases CSS de tu _registro.scss
+        // para que herede la estética limpia y el soporte de colores del tema
         const overlay = document.createElement('div');
         overlay.id = 'modal-verificacion-overlay';
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999999;
-        `;
+        overlay.className = 'modal-panel-overlay active';
 
         overlay.innerHTML = `
-            <div style="
-                background: white;
-                border-radius: 20px;
-                padding: 32px 24px;
-                max-width: 400px;
-                width: 90%;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                text-align: center;
-                position: relative;
-            ">
+            <div class="modal-content" style="text-align: center;">
                 <div style="font-size: 48px; margin-bottom: 12px;">📧</div>
-                <h3 style="margin: 0 0 8px 0; color: #1e293b; font-size: 20px;">¡Cuenta creada!</h3>
-                <p style="margin: 0 0 20px 0; color: #64748b; font-size: 14px; line-height: 1.5;">
-                    Te hemos enviado un enlace de verificación a <strong>${correo}</strong>.<br>
-                    Ábrelo y luego vuelve aquí para continuar.
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button id="btn-ya-verifique-registro" style="
-                        background: #0a46d1;
-                        color: white;
-                        border: none;
-                        padding: 14px;
-                        border-radius: 12px;
-                        font-size: 15px;
-                        font-weight: 600;
-                        cursor: pointer;
-                    ">
+                <h3 class="modal-title">¡Cuenta creada!</h3>
+                <div class="modal-body" style="margin-bottom: 20px; padding-right: 0;">
+                    <p>
+                        Te hemos enviado un enlace de verificación a <strong>${correo}</strong>.<br>
+                        Ábrelo y luego vuelve aquí para continuar.
+                    </p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                    <button id="btn-ya-verifique-registro" class="btn-modal-close" style="margin-top: 0; width: 100%;">
                         ✅ Ya verifiqué, iniciar sesión
                     </button>
                     <button id="btn-reenviar-registro" style="
-                        background: #f1f5f9;
-                        color: #475569;
-                        border: none;
+                        background: var(--input-bg);
+                        color: var(--text-primary);
+                        border: 1px solid var(--card-border);
                         padding: 12px;
                         border-radius: 12px;
                         font-size: 14px;
                         font-weight: 600;
                         cursor: pointer;
+                        transition: all 0.2s;
                     ">
                         🔄 Reenviar correo de verificación
                     </button>
                     <button id="btn-ir-login-registro" style="
                         background: none;
                         border: none;
-                        color: #94a3b8;
+                        color: var(--text-secondary);
                         padding: 8px;
                         font-size: 13px;
                         cursor: pointer;

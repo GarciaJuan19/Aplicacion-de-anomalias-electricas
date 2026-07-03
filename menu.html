@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,14 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0052cc">
+    <script type="module" src="js/modo-oscuro.js"></script>
+    <script>
+        const temaGuardado = localStorage.getItem('pwa_theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', temaGuardado);
+    </script>
 </head>
+
 <body>
 
     <div class="app-container">
@@ -23,12 +31,16 @@
                 <div class="user-welcome">
                     <span>Bienvenido</span>
                     <h2 id="user-display-name">Cargando...</h2>
+
                 </div>
+                <button id="btn-dark-mode" class="btn-toggle">
+                    <i class="bx bx-moon"></i>
+                </button>
             </div>
         </header>
 
         <main class="app-content menu-content">
-            
+
             <a href="index.html" class="menu-card">
                 <div class="card-icon icon-alert">
                     <i class='bx bx-error-alt'></i>
@@ -88,14 +100,15 @@
 
     <script type="module" src="js/menu.js"></script>
     <!-- Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('✅ SW registrado:', reg.scope))
-        .catch(err => console.error('❌ SW error:', err));
-    });
-  }
-</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('✅ SW registrado:', reg.scope))
+                    .catch(err => console.error('❌ SW error:', err));
+            });
+        }
+    </script>
 </body>
+
 </html>
