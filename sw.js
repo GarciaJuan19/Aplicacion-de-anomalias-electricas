@@ -1,146 +1,140 @@
-const CACHE_NAME = 'fallocero-v2'; // 👈 subí la versión para limpiar el cache anterior
+// sw.js - Service Worker para notificaciones PWA
+const CACHE_NAME = 'fallocero-v1';
 
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/login.html',
-  '/menu.html',
-  '/mapa.html',
-  '/mis-reportes.html',
-  '/perfil.html',
-  '/perfil-admin.html', // ✅ corregido
-  '/registro.html',
-  '/recuperarPassword.html',
-  '/admin/index.html',
-  '/admin/mapa-admin.html',
-  '/css/style.css',
-  '/js/firebase-config.js',
-  '/js/login.js',
-  '/js/menu.js',
-  '/js/mapa.js',
-  '/js/mis-reportes.js',
-  '/js/perfil.js',
-  '/js/recuperar.js',
-  '/js/registro.js',
-  '/js/reportar.js',
-  '/js/admin/mapa-admin.js',
-  '/js/admin/perfil-admin.js', // ✅ corregido
-  '/js/admin.js',
-  '/img/Logo3.png',
-  'server.js',
-];
-
-// ================================================
-// INSTALL — cachear archivos
-// ================================================
-self.addEventListener('install', event => {
-  self.skipWaiting(); // Toma control inmediatamente
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      const promises = urlsToCache.map(url =>
-        cache.add(url).catch(err => console.warn('⚠️ No se pudo cachear:', url, err))
-      );
-      return Promise.all(promises);
-    })
-  );
+// Instalación
+self.addEventListener('install', (event) => {
+    console.log('✅ Service Worker instalado');
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('📦 Cache abierto');
+                return cache.add('/');
+            })
+            .then(() => {
+                return self.skipWaiting();
+            })
+            .catch(err => {
+                console.warn('⚠️ Error en instalación:', err);
+            })
+    );
 });
 
-// ================================================
-// ACTIVATE — limpiar caches viejos
-// ================================================
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('🗑️ Eliminando cache viejo:', cacheName);
-            return caches.delete(cacheName);
-          }
+// Activación
+self.addEventListener('activate', (event) => {
+    console.log('✅ Service Worker activado');
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('🗑️ Eliminando cache antiguo:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
         })
-      );
-    }).then(() => clients.claim()) // Toma control de todas las pestañas
-  );
+        .then(() => {
+            return self.clients.claim();
+        })
+    );
 });
 
-// ================================================
-// FETCH — red primero, cache como respaldo
-// ================================================
-self.addEventListener('fetch', event => {
-  // Ignorar peticiones que no sean GET
-  if (event.request.method !== 'GET') return;
+// Fetch - Estrategia simple
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        fetch(event.request)
+            .catch(() => {
+                return caches.match(event.request);
+            })
+    );
+});
 
-  // Ignorar peticiones de Firebase y externos (no cachear)
-  const url = event.request.url;
-  if (
-    url.includes('firestore.googleapis.com') ||
-    url.includes('firebase') ||
-    url.includes('gstatic.com') ||
-    url.includes('googleapis.com')
-  ) {
-    return;
-  }
+// 📨 MANEJAR NOTIFICACIONES PUSH
+self.addEventListener('push', (event) => {
+    console.log('📨 Push recibido:', event);
+    
+    let titulo = '📢 FalloCero';
+    let mensaje = 'Tu reporte ha sido actualizado';
+    let icon = '/img/Logo3.png';
+    let badge = '/img/Logo3.png';
+    let reporteId = null;
 
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // Guardar copia fresca en cache
-        if (response && response.status === 200) {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+    if (event.data) {
+        try {
+            const data = event.data.json();
+            titulo = data.title || titulo;
+            mensaje = data.body || mensaje;
+            icon = data.icon || icon;
+            badge = data.badge || badge;
+            reporteId = data.reporteId || null;
+            console.log('📨 Datos de notificación:', data);
+        } catch (e) {
+            try {
+                mensaje = event.data.text();
+                console.log('📨 Mensaje texto:', mensaje);
+            } catch (err) {
+                console.warn('⚠️ No se pudo leer el mensaje');
+            }
         }
-        return response;
-      })
-      .catch(() => {
-        // Sin conexión — usar cache
-        return caches.match(event.request);
-      })
-  );
-});
-// sw.js
-
-// 1. Escuchar el evento Push que envía el servidor
-self.addEventListener('push', event => {
-  let data = { title: 'Actualización de Anomalías', body: 'Cambio de estado en el sistema.' };
-
-  if (event.data) {
-    data = event.data.json();
-  }
-
-  const opciones = {
-    body: data.body,
-    icon: '/img/icon-notificacion.png', // Puedes apuntar a una imagen dentro de tu carpeta img/
-    badge: '/img/badge.png',            // Icono pequeño de estado (blanco y negro recomendado)
-    vibrate: [200, 100, 200],
-    data: {
-      url: data.url // Adjuntamos la URL dinámica en los metadatos de la alerta
     }
-  };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, opciones)
-  );
+    const options = {
+        body: mensaje,
+        icon: icon,
+        badge: badge,
+        tag: `reporte-${reporteId || 'general'}`,
+        data: {
+            reporteId: reporteId
+        },
+        vibrate: [200, 100, 200],
+        requireInteraction: true,
+        actions: [
+            {
+                action: 'ver',
+                title: '👁️ Ver reporte'
+            },
+            {
+                action: 'cerrar',
+                title: '❌ Cerrar'
+            }
+        ]
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(titulo, options)
+    );
 });
 
-// Dentro de tu sw.js
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
+// 📌 MANEJAR CLIC EN NOTIFICACIÓN
+self.addEventListener('notificationclick', (event) => {
+    console.log('🔔 Click en notificación:', event);
+    
+    event.notification.close();
 
-  // Forzamos a que abra la URL apuntando al puerto de tu Live Server (5500)
-  const urlDestino = `http://127.0.0.1:5500${event.notification.data.url}`;
+    const action = event.action;
+    const reporteId = event.notification.data?.reporteId;
 
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-      for (let client of windowClients) {
-        if (client.url === urlDestino && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(urlDestino);
-      }
-    })
-  );
+    let targetUrl = '/admin.html';
+    if (reporteId) {
+        targetUrl = `/detalle.html?id=${reporteId}`;
+    }
+
+    if (action === 'ver' || !action || action === '') {
+        event.waitUntil(
+            clients.matchAll({
+                type: 'window',
+                includeUncontrolled: true
+            }).then((clientList) => {
+                for (let i = 0; i < clientList.length; i++) {
+                    const client = clientList[i];
+                    if (client.url.includes(targetUrl) && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+                if (clients.openWindow) {
+                    return clients.openWindow(targetUrl);
+                }
+            })
+        );
+    }
 });

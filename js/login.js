@@ -320,57 +320,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-// js/app.js (o el archivo de script que incluyas en tus HTML principales)
 
-const PUBLIC_VAPID_KEY = 'BFKV1nkeE2T0dUsiwi1a9HCK9CNxJC8Et3v5r9_qdhDo1hGp_WinzJe-KZZU3buOt3nBzvt2nPJyfx9O-EfoRP8'; // La misma del server.js
-
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  window.addEventListener('load', () => {
-    // Registra el archivo sw.js que tienes en tu raíz
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => {
-        console.log('Service Worker de Anomalías registrado con éxito.');
-        gestionarSuscripcionPush(reg);
-      })
-      .catch(err => console.error('Error al registrar el SW:', err));
-  });
-}
-
-function gestionarSuscripcionPush(reg) {
-  reg.pushManager.getSubscription().then(sub => {
-    // Si el usuario ya está suscrito, no hacemos nada más
-    if (sub) return;
-
-    // Si es un usuario nuevo, le solicitamos unirse al canal de notificaciones
-    const opciones = {
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
-    };
-
-    // Pedir permiso nativo del navegador
-    // Dentro de tu archivo de login en el frontend
-reg.pushManager.subscribe(opciones)
-  .then(subscription => {
-    // Apuntamos directo al servidor de Node.js en el puerto 3000
-    return fetch('http://localhost:3000/api/subscribe', {
-      method: 'POST',
-      body: JSON.stringify(subscription),
-      headers: { 'Content-Type': 'application/json' }
-    });
-  })
-  .then(() => console.log('¡Usuario suscrito con éxito desde Live Server!'))
-  .catch(err => console.error('Error al suscribir:', err));
-  });
-}
-
-// Función helper necesaria para convertir la clave criptográfica VAPID
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
+   

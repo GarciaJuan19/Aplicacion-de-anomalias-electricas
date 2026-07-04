@@ -10,7 +10,20 @@
     <script type="module" src="../js/admin.js"></script>
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#0052cc">
-
+    <!-- Registrar el Service Worker desde el HTML -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('✅ SW registrado desde HTML');
+                })
+                .catch(err => {
+                    console.warn('⚠️ Error registrando SW:', err);
+                });
+        });
+    }
+</script>
     <script src="../js/modo-oscuro.js" type="module"></script>
 </head>
 
