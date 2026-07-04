@@ -1,12 +1,13 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { collection, onSnapshot, doc, updateDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, onSnapshot, doc, updateDoc, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('reports-container');
     const searchInput = document.getElementById('search-input');
-    const pills = document.querySelectorAll('.filter-pills .pill');
+    const pills = document.querySelectorAll('.status-filters .filter-tab');
     const btnLogout = document.getElementById('btn-logout');
+    const avatarContainer = document.getElementById('admin-avatar-container');
 
     let todosLosReportes = [];
     let filtroEstadoActual = 'Todos';
@@ -20,6 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     let reporteSeleccionadoId = null;
 
+    // ✅ Quita acentos y pasa a minúsculas, para comparar estados sin problemas de "ó" vs "o"
+    function normalizarTexto(texto) {
+        if (!texto) return '';
+        return texto
+            .toString()
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim();
+    }
+
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const esAdmin = user.email === 'admin1@gmail.com' || user.email.endsWith('@admin.com');
@@ -29,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = 'index.html';
             } else {
                 cargarReportesFirestore();
+                cargarFotoPerfilAdmin(user);
             }
         } else {
             window.location.href = 'index.html';
@@ -82,12 +95,41 @@ document.getElementById('btn-limpiar-fecha').addEventListener('click', () => {
                 const nuevoEstado = btn.getAttribute('data-estado');
                 if (confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) {
                     await actualizarEstadoReporte(reporteSeleccionadoId, nuevoEstado);
+                    marcarBotonEstadoActivo(nuevoEstado); // ✅ refleja el cambio al instante
                     modalDetalle.style.display = 'none';
                     document.body.style.overflow = '';
                 }
             });
         });
     });
+
+    // --- FOTO DE PERFIL DEL ADMIN ---
+    async function cargarFotoPerfilAdmin(user) {
+        if (!avatarContainer) return;
+        let urlFoto = null;
+
+        try {
+            // 1️⃣ Primero busca en Firestore, colección "usuarios"
+            const userRef = doc(db, "usuarios", user.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const data = userSnap.data();
+                urlFoto = data.photoURL || data.fotoPerfil || data.foto_perfil || null;
+            }
+        } catch (err) {
+            console.error("Error al obtener foto de perfil desde Firestore:", err);
+        }
+
+        // 2️⃣ Si no hay en Firestore, usa la del proveedor (ej. Google)
+        if (!urlFoto && user.photoURL) {
+            urlFoto = user.photoURL;
+        }
+
+        // 3️⃣ Si encontramos una URL, la mostramos; si no, se queda el ícono default
+        if (urlFoto) {
+            avatarContainer.innerHTML = `<img src="${urlFoto}" alt="Foto de perfil" referrerpolicy="no-referrer">`;
+        }
+    }
 
     // --- LEER REPORTES (cambia el campo de ordenamiento) ---
     function cargarReportesFirestore() {
@@ -142,6 +184,16 @@ document.getElementById('btn-limpiar-fecha').addEventListener('click', () => {
             hour: '2-digit', minute: '2-digit'
         });
     }
+
+    // ✅ Marca visualmente cuál botón de estado corresponde al estado actual del reporte
+    function marcarBotonEstadoActivo(estadoActual) {
+        const estadoNormalizado = normalizarTexto(estadoActual) || 'pendiente';
+        document.querySelectorAll('.btn-estado-modal').forEach(btn => {
+            const estadoBtn = normalizarTexto(btn.getAttribute('data-estado'));
+            btn.classList.toggle('active', estadoBtn === estadoNormalizado);
+        });
+    }
+
     async function abrirModalDetalle(reporte) {
     reporteSeleccionadoId = reporte.id;
 
@@ -155,6 +207,9 @@ document.getElementById('btn-limpiar-fecha').addEventListener('click', () => {
     if (estadoFormateado === "EN REVISIÓN" || estadoFormateado === "EN REVISION") badge.classList.add('en-revision');
     else if (estadoFormateado === "RESUELTO") badge.classList.add('resuelto');
     else badge.classList.add('pendiente');
+
+    // ✅ Resalta el botón de estado que corresponde al estado actual
+    marcarBotonEstadoActivo(reporte.estado);
 
     // --- Fecha (fix: leer fechaCreacion correctamente) ---
 // --- Fecha (fix definitivo) ---
@@ -182,9 +237,6 @@ if (fechaRaw) {
 }
 
 document.getElementById('detalle-fecha').textContent = fechaMostrar;
-
-console.log("fechaMostrar:", fechaMostrar);
-console.log("elemento detalle-fecha:", document.getElementById('detalle-fecha'));
 
     // --- Descripción ---
     document.getElementById('modal-descripcion').textContent = reporte.descripcion || 'Sin descripción.';
@@ -225,7 +277,6 @@ console.log("elemento detalle-fecha:", document.getElementById('detalle-fecha'))
     if (reporte.idUsuario) {
         try {
             // ✅ Busca en la colección 'usuarios' con el idUsuario del reporte
-            const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
             const userRef = doc(db, "usuarios", reporte.idUsuario);
             const userSnap = await getDoc(userRef);
 
@@ -305,6 +356,9 @@ console.log("elemento detalle-fecha:", document.getElementById('detalle-fecha'))
                 ubicacionTexto = `Lat: ${reporte.ubicacion.latitud.toFixed(4)}, Lon: ${reporte.ubicacion.longitud.toFixed(4)}`;
             }
 
+            // ✅ Preselecciona en el <select> de la tarjeta el estado actual del reporte
+            const estadoNormalizado = normalizarTexto(reporte.estado) || 'pendiente';
+
             const card = document.createElement('div');
             card.className = 'report-card';
             card.innerHTML = `
@@ -328,10 +382,10 @@ console.log("elemento detalle-fecha:", document.getElementById('detalle-fecha'))
     <div class="card-actions">
         <button class="btn-details">Ver Detalles</button>
         <select class="select-action" data-id="${reporte.id}">
-            <option value="" disabled selected>Cambiar Estado</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="en revisión">En revisión</option>
-            <option value="resuelto">Resuelto</option>
+            <option value="" disabled ${!['pendiente', 'en revision', 'resuelto'].includes(estadoNormalizado) ? 'selected' : ''}>Cambiar Estado</option>
+            <option value="pendiente" ${estadoNormalizado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+            <option value="en revisión" ${estadoNormalizado === 'en revision' ? 'selected' : ''}>En revisión</option>
+            <option value="resuelto" ${estadoNormalizado === 'resuelto' ? 'selected' : ''}>Resuelto</option>
         </select>
     </div>
 `;
@@ -343,7 +397,7 @@ console.log("elemento detalle-fecha:", document.getElementById('detalle-fecha'))
                 if (confirm(`¿Confirmas cambiar el estado a "${nuevoEstado}"?`)) {
                     await actualizarEstadoReporte(docId, nuevoEstado);
                 } else {
-                    e.target.value = "";
+                    e.target.value = estadoNormalizado === 'en revision' ? 'en revisión' : estadoNormalizado;
                 }
             });
 

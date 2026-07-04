@@ -8,175 +8,159 @@
     <link rel="stylesheet" href="../css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script type="module" src="../js/admin.js"></script>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#0052cc">
+
+    <script src="../js/modo-oscuro.js" type="module"></script>
 </head>
 
 <body class="bg-light">
+
     <!-- Modal filtro fecha -->
-    <div id="modal-fecha"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
-        <div style="background:#1e293b; border-radius:16px; padding:24px; width:300px; margin:auto; margin-top:30vh;">
-            <h3 style="color:#f1f5f9; margin:0 0 16px;">Filtrar por fecha</h3>
-            <label style="color:#94a3b8; font-size:0.85rem;">Desde</label>
-            <input type="date" id="fecha-desde"
-                style="width:100%; margin:6px 0 12px; padding:8px; border-radius:8px; border:none; background:#334155; color:#f1f5f9;">
-            <label style="color:#94a3b8; font-size:0.85rem;">Hasta</label>
-            <input type="date" id="fecha-hasta"
-                style="width:100%; margin:6px 0 16px; padding:8px; border-radius:8px; border:none; background:#334155; color:#f1f5f9;">
-            <div style="display:flex; gap:8px;">
-                <button id="btn-limpiar-fecha"
-                    style="flex:1; padding:10px; border-radius:8px; border:none; background:#475569; color:#f1f5f9; cursor:pointer;">Limpiar</button>
-                <button id="btn-aplicar-fecha"
-                    style="flex:1; padding:10px; border-radius:8px; border:none; background:#6366f1; color:#fff; cursor:pointer;">Aplicar</button>
+    <div id="modal-fecha" class="modal-fecha-admin">
+        <div class="modal-fecha-content-admin">
+            <h3 class="modal-fecha-title-admin">Filtrar por fecha</h3>
+
+            <label class="modal-fecha-label-admin" for="fecha-desde">Desde</label>
+            <input type="date" id="fecha-desde" class="modal-fecha-input-admin">
+
+            <label class="modal-fecha-label-admin" for="fecha-hasta">Hasta</label>
+            <input type="date" id="fecha-hasta" class="modal-fecha-input-admin">
+
+            <div class="modal-fecha-actions-admin">
+                <button id="btn-limpiar-fecha" class="btn-fecha-secondary-admin">Limpiar</button>
+                <button id="btn-aplicar-fecha" class="btn-fecha-primary-admin">Aplicar</button>
             </div>
         </div>
     </div>
+
     <!-- Modal Ver Detalles -->
-    <div id="modal-detalle"
-        style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.5); z-index:999; align-items:flex-start; justify-content:center; overflow-y:auto; padding:20px 16px;">
-        <div
-            style="background:#f8fafc; border-radius:20px; width:100%; max-width:448px; margin:auto; overflow:hidden; border:1px solid #e2e8f0; box-shadow:0 20px 40px rgba(0,0,0,0.12);">
+    <div id="modal-detalle" class="modal-detalle-admin">
+        <div class="modal-detalle-content-admin">
 
             <!-- Header -->
-            <div
-                style="background:#ffffff; padding:18px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <div
-                        style="width:36px; height:36px; border-radius:10px; background:#fee2e2; display:flex; align-items:center; justify-content:center; color:#e11d48; font-size:18px;">
+            <div class="modal-detalle-header-admin">
+                <div class="modal-detalle-header-info-admin">
+                    <div class="modal-detalle-icon-admin">
                         <i class='bx bx-error'></i>
                     </div>
-                    <h2 style="color:#1e293b; margin:0; font-size:1rem; font-weight:700;">Detalle del Reporte</h2>
+                    <h2 class="modal-detalle-title-admin">Detalle del Reporte</h2>
                 </div>
-                <button id="btn-cerrar-modal"
-                    style="background:#f1f5f9; border:none; color:#64748b; width:32px; height:32px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                <button id="btn-cerrar-modal" class="btn-cerrar-modal-admin">
                     <i class='bx bx-x'></i>
                 </button>
             </div>
 
             <!-- Foto -->
-            <div id="modal-foto-container" style="width:100%; height:190px; overflow:hidden; display:none;">
-                <img id="modal-foto" src="" alt="Foto del reporte" style="width:100%; height:100%; object-fit:cover;">
+            <div id="modal-foto-container" class="modal-detalle-foto-container-admin">
+                <img id="modal-foto" src="" alt="Foto del reporte" class="modal-detalle-foto-admin">
             </div>
 
             <!-- Sin foto: placeholder -->
-            <div id="modal-foto-placeholder"
-                style="width:100%; height:100px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:2rem;">
+            <div id="modal-foto-placeholder" class="modal-detalle-foto-placeholder-admin">
                 <i class='bx bx-image'></i>
             </div>
 
             <!-- Contenido -->
-            <div style="padding:20px; display:flex; flex-direction:column; gap:12px;">
+            <div class="modal-detalle-body-admin">
 
                 <!-- Tipo + Estado -->
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 id="modal-tipo"
-                        style="color:#1e293b; margin:0; text-transform:capitalize; font-size:1.15rem; font-weight:700;">
-                    </h3>
+                <div class="modal-detalle-top-admin">
+                    <h3 id="modal-tipo" class="modal-detalle-tipo-admin"></h3>
                     <span id="modal-badge" class="badge-status"></span>
                 </div>
 
                 <!-- Fecha -->
-                <div style="display:flex; align-items:center; gap:8px; color:#64748b; font-size:0.85rem;">
-                    <i class='bx bx-time-five' style="color:#0052cc;"></i>
-             
-                    <!-- ¿Tienes exactamente este id? -->
+                <div class="modal-detalle-fecha-admin">
+                    <i class='bx bx-time-five'></i>
                     <span id="detalle-fecha"></span>
                 </div>
 
                 <!-- Descripción -->
-                <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
-                    <p
-                        style="color:#94a3b8; font-size:0.72rem; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.06em; font-weight:600;">
-                        Descripción</p>
-                    <p id="modal-descripcion" style="color:#1e293b; margin:0; font-size:0.9rem; line-height:1.6;"></p>
+                <div class="modal-detalle-section-admin">
+                    <p class="modal-detalle-section-title-admin">Descripción</p>
+                    <p id="modal-descripcion" class="modal-detalle-descripcion-admin"></p>
                 </div>
 
                 <!-- Ubicación -->
-                <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
-                    <p
-                        style="color:#94a3b8; font-size:0.72rem; margin:0 0 8px; text-transform:uppercase; letter-spacing:0.06em; font-weight:600;">
-                        Ubicación</p>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <i class='bx bx-map' style="color:#0052cc;"></i>
-                        <span id="modal-ubicacion" style="color:#1e293b; font-size:0.9rem;"></span>
+                <div class="modal-detalle-section-admin">
+                    <p class="modal-detalle-section-title-admin">Ubicación</p>
+                    <div class="modal-detalle-ubicacion-row-admin">
+                        <i class='bx bx-map'></i>
+                        <span id="modal-ubicacion"></span>
                     </div>
-                    <div id="modal-mapa-container"
-                        style="margin-top:10px; border-radius:10px; overflow:hidden; display:none;">
+                    <div id="modal-mapa-container" class="modal-detalle-mapa-container-admin">
                         <iframe id="modal-mapa" width="100%" height="150" style="border:0;" allowfullscreen=""
                             loading="lazy"></iframe>
                     </div>
                 </div>
 
                 <!-- Usuario -->
-                <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
-                    <p
-                        style="color:#94a3b8; font-size:0.72rem; margin:0 0 8px; text-transform:uppercase; letter-spacing:0.06em; font-weight:600;">
-                        Reportado por</p>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <i class='bx bx-user' style="color:#0052cc;"></i>
-                        <span id="modal-usuario" style="color:#1e293b; font-size:0.9rem;"></span>
+                <div class="modal-detalle-section-admin">
+                    <p class="modal-detalle-section-title-admin">Reportado por</p>
+                    <div class="modal-detalle-usuario-row-admin">
+                        <i class='bx bx-user'></i>
+                        <span id="modal-usuario"></span>
                     </div>
                 </div>
 
                 <!-- Cambiar Estado -->
-                <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
-                    <p
-                        style="color:#94a3b8; font-size:0.72rem; margin:0 0 10px; text-transform:uppercase; letter-spacing:0.06em; font-weight:600;">
-                        Cambiar Estado</p>
-                    <div style="display:flex; gap:8px;">
-                        <button class="btn-estado-modal" data-estado="pendiente"
-                            style="flex:1; padding:10px 6px; border-radius:10px; border:1.5px solid #e11d48; background:#fff5f5; color:#e11d48; cursor:pointer; font-size:0.8rem; font-weight:600;">
-                            Pendiente
-                        </button>
-                        <button class="btn-estado-modal" data-estado="en revisión"
-                            style="flex:1; padding:10px 6px; border-radius:10px; border:1.5px solid #d97706; background:#fffbeb; color:#d97706; cursor:pointer; font-size:0.8rem; font-weight:600;">
-                            En Revisión
-                        </button>
-                        <button class="btn-estado-modal" data-estado="resuelto"
-                            style="flex:1; padding:10px 6px; border-radius:10px; border:1.5px solid #16a34a; background:#f0fdf4; color:#16a34a; cursor:pointer; font-size:0.8rem; font-weight:600;">
-                            Resuelto
-                        </button>
+                <div class="modal-detalle-section-admin">
+                    <p class="modal-detalle-section-title-admin">Cambiar Estado</p>
+                    <div class="modal-detalle-estado-buttons-admin">
+                        <button class="btn-estado-modal" data-estado="pendiente">Pendiente</button>
+                        <button class="btn-estado-modal" data-estado="en revisión">En Revisión</button>
+                        <button class="btn-estado-modal" data-estado="resuelto">Resuelto</button>
                     </div>
                 </div>
 
             </div>
         </div>
     </div>
+
+    <!-- Contenedor Principal del Panel -->
     <div class="admin-container">
 
         <header class="admin-header">
-            <div class="admin-profile">
-                <img src="../img/Logo3.png" alt="Admin" class="admin-avatar">
+            <div class="admin-profile-left">
+                <div id="admin-avatar-container" class="admin-avatar-container">
+                    <i class='bx bx-user-circle default-avatar-icon'></i>
+                </div>
                 <h1 class="admin-title">Admin Panel</h1>
             </div>
-            <button class="btn-notification" id="btn-logout"><i class='bx bx-log-out'></i></button>
+            <button class="btn-logout-admin" id="btn-logout">
+                <i class='bx bx-log-out'></i>
+            </button>
         </header>
 
-        <div class="search-section">
-            <div class="search-wrapper">
+        <!-- Barra de Herramientas (Buscador y Filtro Fecha) -->
+        <div class="admin-toolbar">
+            <div class="search-container">
                 <i class='bx bx-search search-icon'></i>
-                <input type="text" id="search-input" placeholder="Buscar reporte o dirección...">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar reporte o dirección...">
             </div>
             <button class="btn-filter-date" id="btn-filter-date">
                 <i class='bx bx-calendar'></i> Filtrar por fecha
             </button>
         </div>
 
-        <div class="filter-pills">
-            <button class="pill active" data-status="Todos">Todos</button>
-            <button class="pill" data-status="PENDIENTE">Pendiente</button>
-            <button class="pill" data-status="EN REVISIÓN">En revisión</button>
-            <button class="pill" data-status="RESUELTO">Resuelto</button>
+        <!-- Pestañas de Filtro por Estado -->
+        <div class="status-filters">
+            <button class="filter-tab active" data-status="Todos">Todos</button>
+            <button class="filter-tab" data-status="PENDIENTE">Pendiente</button>
+            <button class="filter-tab" data-status="EN REVISIÓN">En revisión</button>
+            <button class="filter-tab" data-status="RESUELTO">Resuelto</button>
         </div>
 
-        <main class="reports-list" id="reports-container">
+        <!-- Grilla donde se renderizan las tarjetas mediante JS -->
+        <main class="reports-grid" id="reports-container">
             <div class="loading-state">
                 <i class='bx bx-loader-alt bx-spin'></i>
                 <p>Cargando reportes desde Firestore...</p>
             </div>
         </main>
 
+        <!-- Barra de navegación inferior fija -->
         <nav class="bottom-nav">
             <a href="index.html" class="nav-item active">
                 <i class='bx bx-file-blank'></i>
@@ -186,22 +170,22 @@
                 <i class='bx bx-map-alt'></i>
                 <span>Mapa</span>
             </a>
-
             <a href="perfil-admin.html" class="nav-item">
                 <i class='bx bx-cog'></i>
                 <span>Ajustes</span>
             </a>
         </nav>
     </div>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('✅ SW registrado:', reg.scope))
-        .catch(err => console.error('❌ SW error:', err));
-    });
-  }
-</script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('✅ SW registrado:', reg.scope))
+                    .catch(err => console.error('❌ SW error:', err));
+            });
+        }
+    </script>
 </body>
 
 </html>

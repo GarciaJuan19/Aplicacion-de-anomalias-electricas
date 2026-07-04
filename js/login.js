@@ -130,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
     //  FUNCIÓN: MOSTRAR MODAL DE VERIFICACIÓN
+    //  ✅ Ahora usa clases CSS (auth.scss) en vez de estilos inline,
+    //     así respeta modo claro/oscuro automáticamente.
     // ==========================================
     function mostrarModalReenvio(correo) {
         const overlayExistente = document.getElementById('modal-verificacion-overlay');
@@ -137,68 +139,44 @@ document.addEventListener('DOMContentLoaded', () => {
             overlayExistente.remove();
         }
 
+        // ✅ Misma estructura y clases que el modal de registro.js
+        // (modal-panel-overlay / modal-content / btn-modal-close),
+        // así hereda automáticamente el modo oscuro/claro de auth.scss.
         const overlay = document.createElement('div');
         overlay.id = 'modal-verificacion-overlay';
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999999;
-        `;
+        overlay.className = 'modal-panel-overlay active';
 
         overlay.innerHTML = `
-            <div style="
-                background: white;
-                border-radius: 20px;
-                padding: 32px 24px;
-                max-width: 400px;
-                width: 90%;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                text-align: center;
-                position: relative;
-            ">
+            <div class="modal-content" style="text-align: center;">
                 <div style="font-size: 48px; margin-bottom: 12px;">📧</div>
-                <h3 style="margin: 0 0 8px 0; color: #1e293b; font-size: 20px;">Verifica tu correo</h3>
-                <p style="margin: 0 0 20px 0; color: #64748b; font-size: 14px; line-height: 1.5;">
-                    Te hemos enviado un enlace de verificación a <strong>${correo}</strong>.<br>
-                    Revisa tu bandeja de entrada y carpeta de SPAM.
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button id="btn-verificar-ya" style="
-                        background: #0a46d1;
-                        color: white;
-                        border: none;
-                        padding: 14px;
-                        border-radius: 12px;
-                        font-size: 15px;
-                        font-weight: 600;
-                        cursor: pointer;
-                    ">
+                <h3 class="modal-title" style="justify-content: center;">Verifica tu correo</h3>
+                <div class="modal-body" style="margin-bottom: 20px; padding-right: 0;">
+                    <p>
+                        Te hemos enviado un enlace de verificación a <strong>${correo}</strong>.<br>
+                        Revisa tu bandeja de entrada y carpeta de SPAM.
+                    </p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                    <button id="btn-verificar-ya" class="btn-modal-close" style="margin-top: 0; width: 100%;">
                         ✅ Ya verifiqué, iniciar sesión
                     </button>
                     <button id="btn-reenviar-verificacion" style="
-                        background: #f1f5f9;
-                        color: #475569;
-                        border: none;
+                        background: var(--input-bg);
+                        color: var(--text-primary);
+                        border: 1px solid var(--card-border);
                         padding: 12px;
                         border-radius: 12px;
                         font-size: 14px;
                         font-weight: 600;
                         cursor: pointer;
+                        transition: all 0.2s;
                     ">
                         🔄 Reenviar correo de verificación
                     </button>
                     <button id="btn-cerrar-modal-verif" style="
                         background: none;
                         border: none;
-                        color: #94a3b8;
+                        color: var(--text-secondary);
                         padding: 8px;
                         font-size: 13px;
                         cursor: pointer;

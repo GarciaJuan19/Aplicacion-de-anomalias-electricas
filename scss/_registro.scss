@@ -19,7 +19,6 @@ body.auth-body {
     min-height: 100vh;
     padding: 20px;
     color: var(--text-primary);
-    transition: background-color 0.3s ease;
 }
 
 // --- CONTENEDOR PRINCIPAL ---
@@ -32,7 +31,6 @@ body.auth-body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
                 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--card-border);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
 
     // --- HEADER ---
     .auth-header {
@@ -47,14 +45,12 @@ body.auth-body {
 
             .logo-icon {
                 font-size: 2rem;
-                transition: color 0.3s ease;
             }
 
             h1 {
                 font-size: 2rem;
                 font-weight: 700;
                 color: var(--text-primary);
-                transition: color 0.3s ease;
             }
         }
 
@@ -62,7 +58,6 @@ body.auth-body {
             font-size: 0.95rem;
             color: var(--text-secondary);
             line-height: 1.5;
-            transition: color 0.3s ease;
         }
     }
 
@@ -87,7 +82,6 @@ body.auth-body {
                 color: var(--text-secondary);
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
-                transition: color 0.3s ease;
             }
 
             .input-field {
@@ -101,7 +95,6 @@ body.auth-body {
                     font-size: 1.3rem;
                     color: var(--input-icon-color);
                     pointer-events: none;
-                    transition: color 0.3s ease;
                 }
 
                 input {
@@ -112,10 +105,6 @@ body.auth-body {
                     font-size: 1rem;
                     color: var(--text-primary);
                     background-color: var(--input-bg);
-                    transition: border-color 0.2s,
-                                background-color 0.2s,
-                                box-shadow 0.2s,
-                                color 0.3s ease;
 
                     &::placeholder {
                         color: var(--text-secondary);
@@ -146,7 +135,6 @@ body.auth-body {
                     font-size: 1.2rem;
                     display: flex;
                     align-items: center;
-                    transition: color 0.3s ease;
 
                     &:hover {
                         color: var(--primary-color);
@@ -177,7 +165,6 @@ body.auth-body {
                 font-size: 0.9rem;
                 color: var(--text-secondary);
                 line-height: 1.4;
-                transition: color 0.3s ease;
 
                 input[type="checkbox"] {
                     display: none;
@@ -200,7 +187,6 @@ body.auth-body {
                     flex-shrink: 0;
                     position: relative;
                     margin-top: 2px;
-                    transition: all 0.2s;
                     background-color: var(--card-bg);
 
                     &::after {
@@ -222,7 +208,6 @@ body.auth-body {
                         color: var(--primary-color);
                         text-decoration: none;
                         font-weight: 600;
-                        transition: color 0.3s ease;
 
                         &:hover {
                             text-decoration: underline;
@@ -244,7 +229,6 @@ body.auth-body {
             font-weight: 700;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.15s;
 
             &:hover {
                 background-color: var(--primary-hover);
@@ -284,7 +268,6 @@ body.auth-body {
             margin-left: auto;
             margin-right: auto;
             z-index: 2;
-            transition: color 0.3s ease, background-color 0.3s ease;
         }
 
         display: flex;
@@ -299,20 +282,17 @@ body.auth-body {
             height: 1px;
             background-color: var(--border-color);
             z-index: 1;
-            transition: background-color 0.3s ease;
         }
 
         p {
             font-size: 0.95rem;
             color: var(--text-primary);
             z-index: 2;
-            transition: color 0.3s ease;
 
             .auth-link-action {
                 color: var(--primary-color);
                 text-decoration: none;
                 font-weight: 700;
-                transition: color 0.3s ease;
 
                 &:hover {
                     text-decoration: underline;
@@ -338,7 +318,6 @@ body.auth-body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-    animation: fadeIn 0.25s ease;
 
     &.active {
         display: flex !important;
@@ -355,8 +334,6 @@ body.auth-body {
         flex-direction: column;
         border: 1px solid var(--card-border);
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-        animation: slideUp 0.3s ease;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
 
         .modal-title {
             margin: 0 0 12px 0;
@@ -366,12 +343,10 @@ body.auth-body {
             display: flex;
             align-items: center;
             gap: 10px;
-            transition: color 0.3s ease;
 
             i {
                 color: var(--primary-color);
                 font-size: 24px;
-                transition: color 0.3s ease;
             }
         }
 
@@ -384,7 +359,6 @@ body.auth-body {
             font-size: 14px;
             line-height: 1.6;
             text-align: left;
-            transition: color 0.3s ease;
 
             &::-webkit-scrollbar {
                 width: 4px;
@@ -397,7 +371,6 @@ body.auth-body {
             &::-webkit-scrollbar-thumb {
                 background: var(--border-color);
                 border-radius: 10px;
-                transition: background-color 0.3s ease;
             }
 
             p {
@@ -409,7 +382,6 @@ body.auth-body {
 
                 strong {
                     color: var(--text-primary);
-                    transition: color 0.3s ease;
                 }
             }
         }
@@ -423,7 +395,6 @@ body.auth-body {
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -439,27 +410,6 @@ body.auth-body {
                 transform: scale(0.97);
             }
         }
-    }
-}
-
-// --- ANIMACIONES ---
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.96);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
     }
 }
 
@@ -683,34 +633,4 @@ body.auth-body {
             }
         }
     }
-
-    .btn-auth-submit {
-        &:hover {
-            box-shadow: 0 4px 12px rgba(0, 82, 204, 0.4);
-        }
-    }
-}
-
-// --- TRANSICIONES SUAVES PARA EL TEMA ---
-.auth-container,
-.auth-header .logo-area h1,
-.auth-header .logo-area .logo-icon,
-.auth-subtitle,
-.input-field input,
-.input-field .input-icon,
-.input-field .btn-toggle-password,
-.checkbox-label,
-.checkbox-custom,
-.auth-link,
-.auth-link-action,
-.auth-footer p,
-.modal-content,
-.modal-title,
-.modal-body,
-.modal-body p strong,
-.btn-modal-close {
-    transition: background-color 0.3s ease,
-                border-color 0.3s ease,
-                color 0.3s ease,
-                box-shadow 0.3s ease;
 }
