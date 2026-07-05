@@ -27,19 +27,29 @@
                         <img src="" alt="Foto de perfil" id="menu-profile-preview" style="display: none;">
                         <i class='bx bx-user avatar-fallback-icon' id="menu-avatar-icon"></i>
                     </div>
+                    <!-- ⚠️ EL BADGE YA NO VA AQUÍ -->
                 </div>
+
                 <div class="user-welcome">
                     <span>Bienvenido</span>
                     <h2 id="user-display-name">Cargando...</h2>
-
                 </div>
-                <button id="btn-dark-mode" class="btn-toggle">
-                    <i class="bx bx-moon"></i>
-                </button>
+
+                <div class="header-actions">
+                    <!-- ✅ BOTÓN DE NOTIFICACIONES CON BADGE -->
+                    <button id="btn-notificaciones" class="btn-notificaciones" aria-label="Notificaciones">
+                        <i id="icono-campana" class='bx bx-bell'></i>
+                        <span id="badge-notificaciones" class="badge-notificaciones"></span>
+                    </button>
+                    <button id="btn-dark-mode" class="btn-toggle" ">
+                        <i class="bx bx-moon"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
         <main class="app-content menu-content">
+            <!-- Alerta de verificación se inserta aquí dinámicamente -->
 
             <a href="index.html" class="menu-card">
                 <div class="card-icon icon-alert">
@@ -94,11 +104,43 @@
                     <p>Salir de tu cuenta</p>
                 </div>
             </button>
-
         </main>
     </div>
 
+    <!-- ========================================== -->
+    <!--  MODAL DE NOTIFICACIONES                   -->
+    <!-- ========================================== -->
+    <div id="modal-notificaciones" class="modal-notificaciones">
+        <div class="modal-notificaciones-content">
+            <!-- Header -->
+            <div class="modal-notificaciones-header">
+                <div class="modal-notificaciones-title">
+                    <i class='bx bxs-bell-ring'></i>
+                    <h3>Notificaciones</h3>
+                    <span id="modal-total-notif" class="modal-total-notif">0</span>
+                </div>
+                <button id="btn-cerrar-modal-notif" class="modal-close-btn">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div id="modal-notificaciones-cuerpo" class="modal-notificaciones-body">
+                <!-- El contenido se renderiza dinámicamente -->
+            </div>
+
+            <!-- Footer con botón "Marcar como visto" -->
+            <div class="modal-notificaciones-footer">
+                <button id="btn-marcar-visto" class="btn-marcar-visto">
+                    <i class='bx bx-check-circle'></i>
+                    Marcar como visto
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/menu.js"></script>
+
     <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {

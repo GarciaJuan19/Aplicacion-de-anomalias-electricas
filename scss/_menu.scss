@@ -11,9 +11,10 @@ $radius-md: 16px;
 .menu-header {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
     padding: 40px 24px 30px;
-    border-bottom-left-radius: $radius-lg;
-    border-bottom-right-radius: $radius-lg;
+    margin: 16px 16px 8px;
+    border-radius: $radius-lg;
     box-shadow: 0 12px 28px rgba(0, 82, 204, 0.18);
+
 
     .user-profile-section {
         display: flex;
@@ -35,6 +36,7 @@ $radius-md: 16px;
             width: 40px;
             height: 40px;
             object-fit: contain;
+            
         }
     }
 

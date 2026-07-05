@@ -1,6 +1,20 @@
+// ==========================================
+//  ADMIN.JS - COMPLETO CON NOTIFICACIONES
+// ==========================================
+
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { collection, onSnapshot, doc, updateDoc, query, orderBy, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { 
+    collection, 
+    onSnapshot, 
+    doc, 
+    updateDoc, 
+    query, 
+    orderBy, 
+    getDoc, 
+    addDoc,
+    where
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import notificationManager from './notificaciones.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     let reporteSeleccionadoId = null;
 
+    // ==========================================
+    //  UTILIDADES
+    // ==========================================
+
     // ✅ Quita acentos y pasa a minúsculas
     function normalizarTexto(texto) {
         if (!texto) return '';
@@ -33,7 +51,30 @@ document.addEventListener('DOMContentLoaded', () => {
             .trim();
     }
 
-    // ✅ FUNCIÓN PARA ENVIAR NOTIFICACIÓN AL USUARIO
+    // ✅ Formatear fecha
+    function formatearFecha(fecha_creacion) {
+        let fecha;
+        if (!fecha_creacion) return "Sin fecha";
+        if (typeof fecha_creacion.toDate === 'function') {
+            fecha = fecha_creacion.toDate();
+        } else if (typeof fecha_creacion === 'string' || typeof fecha_creacion === 'number') {
+            fecha = new Date(fecha_creacion);
+        } else {
+            return "Fecha inválida";
+        }
+        if (isNaN(fecha.getTime())) return "Fecha inválida";
+        return fecha.toLocaleDateString('es-MX', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        }) + " " + fecha.toLocaleTimeString('es-MX', {
+            hour: '2-digit', minute: '2-digit'
+        });
+    }
+
+    // ==========================================
+    //  FUNCIONES DE NOTIFICACIONES
+    // ==========================================
+
+    // ✅ ENVIAR NOTIFICACIÓN AL USUARIO
     async function enviarNotificacionUsuario(usuarioId, reporteId, estadoNuevo, tipoAnomalia) {
         try {
             console.log('📨 Preparando notificación para usuario:', usuarioId);
@@ -65,9 +106,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: `Estamos revisando tu reporte "${tipoAnomalia}".`,
                     icon: '/img/Logo3.png'
                 },
+                'en revision': {
+                    title: '🔍 Reporte en Revisión',
+                    body: `Estamos revisando tu reporte "${tipoAnomalia}".`,
+                    icon: '/img/Logo3.png'
+                },
                 'resuelto': {
                     title: '✅ Reporte Resuelto',
                     body: `¡Tu reporte "${tipoAnomalia}" ha sido resuelto!`,
+                    icon: '/img/Logo3.png'
+                },
+                'rechazado': {
+                    title: '❌ Reporte Rechazado',
+                    body: `Tu reporte "${tipoAnomalia}" ha sido rechazado.`,
                     icon: '/img/Logo3.png'
                 }
             };
@@ -78,35 +129,58 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: '/img/Logo3.png'
             };
 
-            // 4. Si tiene suscripción, registrar notificación push
-            if (tieneSuscripcion) {
-                console.log('📨 Usuario tiene suscripción push');
-                
-                // Guardar en historial de notificaciones
+            // 4. Guardar en historial de notificaciones (SIEMPRE)
+            try {
                 const notificacionRef = collection(db, "notificaciones");
                 await addDoc(notificacionRef, {
                     usuarioId: usuarioId,
                     reporteId: reporteId,
                     estado: estadoNuevo,
+                    estadoAnterior: null, // Se actualizará después
                     mensaje: mensaje.body,
                     titulo: mensaje.title,
                     fechaEnvio: new Date().toISOString(),
                     leida: false,
                     tipo: 'push'
                 });
-                
                 console.log('✅ Notificación registrada en historial');
+            } catch (error) {
+                console.error('❌ Error guardando notificación en historial:', error);
             }
 
-            // 5. SIEMPRE mostrar notificación local (para pruebas)
+            // 5. Si tiene suscripción, enviar push
+            if (tieneSuscripcion) {
+                console.log('📨 Enviando notificación push...');
+                // Aquí iría la lógica para enviar push real
+                // Por ahora solo lo registramos
+            }
+
+            // 6. SIEMPRE mostrar notificación local (para pruebas)
             if (Notification.permission === 'granted') {
                 console.log('📢 Mostrando notificación local...');
-                new Notification(mensaje.title, {
-                    body: mensaje.body,
-                    icon: mensaje.icon,
-                    tag: `reporte-${reporteId}`,
-                    requireInteraction: true
-                });
+                try {
+                    const notification = new Notification(mensaje.title, {
+                        body: mensaje.body,
+                        icon: mensaje.icon,
+                        tag: `reporte-${reporteId}`,
+                        requireInteraction: true,
+                        vibrate: [200, 100, 200]
+                    });
+
+                    // Al hacer clic en la notificación
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                        // Redirigir al detalle del reporte si es posible
+                    };
+
+                    // Cerrar después de 8 segundos
+                    setTimeout(() => {
+                        if (notification.close) notification.close();
+                    }, 8000);
+                } catch (error) {
+                    console.error('❌ Error mostrando notificación:', error);
+                }
             }
 
             console.log('✅ Notificación procesada correctamente');
@@ -143,7 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2. Actualizar estado en Firestore
             let datosActualizados = { 
                 estado: nuevoEstado, 
-                ultima_modificacion: timestampActual 
+                ultima_modificacion: timestampActual,
+                estadoAnterior: estadoAnterior,
+                fechaCambioEstado: timestampActual
             };
             
             if (nuevoEstado.toLowerCase() === "resuelto") {
@@ -151,12 +227,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             await updateDoc(docRef, datosActualizados);
-            console.log('✅ Estado actualizado en Firestore');
+            
+            console.log(`✅ Estado actualizado: ${estadoAnterior} → ${nuevoEstado}`);
             
             // 3. ENVIAR NOTIFICACIÓN AL USUARIO
+            let notificacionEnviada = false;
             if (reporteData.idUsuario) {
                 console.log('📨 Enviando notificación al usuario...');
-                const notificacionEnviada = await enviarNotificacionUsuario(
+                notificacionEnviada = await enviarNotificacionUsuario(
                     reporteData.idUsuario,
                     id,
                     nuevoEstado,
@@ -164,16 +242,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
                 
                 if (notificacionEnviada) {
-                    alert(`✨ Estado actualizado a "${nuevoEstado}" y notificación enviada al usuario.`);
+                    alert(`✅ Estado actualizado a "${nuevoEstado}" y notificación enviada al usuario.`);
                 } else {
-                    alert(`✨ Estado actualizado a "${nuevoEstado}". (No se pudo enviar notificación)`);
+                    alert(`✅ Estado actualizado a "${nuevoEstado}". (No se pudo enviar notificación)`);
                 }
             } else {
-                alert(`✨ Estado actualizado a "${nuevoEstado}".`);
+                alert(`✅ Estado actualizado a "${nuevoEstado}".`);
             }
             
             // 4. Actualizar la vista
             renderizarReportes();
+            
+            // 5. Cerrar el modal si está abierto
+            const modalDetalle = document.getElementById('modal-detalle');
+            if (modalDetalle && modalDetalle.style.display === 'flex') {
+                modalDetalle.style.display = 'none';
+                document.body.style.overflow = '';
+            }
             
         } catch (error) {
             console.error("❌ Error:", error);
@@ -181,164 +266,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ✅ MONITOREAR AUTENTICACIÓN
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const esAdmin = user.email === 'admin1@gmail.com' || user.email.endsWith('@admin.com');
-            if (!esAdmin) {
-                alert("⛔ Acceso denegado.");
-                await signOut(auth);
-                window.location.href = 'index.html';
-            } else {
-                // ✅ INICIALIZAR NOTIFICACIONES
-                try {
-                    const notificacionesActivas = await notificationManager.init();
-                    
-                    if (notificacionesActivas) {
-                        console.log('✅ Notificaciones push activadas');
-                        // Enviar notificación de prueba después de 3 segundos
-                        setTimeout(() => {
-                            notificationManager.enviarNotificacionPrueba();
-                        }, 3000);
-                    } else {
-                        console.warn('⚠️ No se pudieron activar las notificaciones');
-                    }
-                } catch (error) {
-                    console.error('❌ Error con notificaciones:', error);
-                }
-                
-                cargarReportesFirestore();
-                cargarFotoPerfilAdmin(user);
-            }
-        } else {
-            window.location.href = 'index.html';
-        }
-    });
+    // ==========================================
+    //  FUNCIONES DE UI
+    // ==========================================
 
-    // --- FILTRO POR FECHA ---
-    btnFilterDate.addEventListener('click', () => {
-        modalFecha.style.display = 'flex';
-    });
-
-    modalFecha.addEventListener('click', (e) => {
-        if (e.target === modalFecha) modalFecha.style.display = 'none';
-    });
-
-    document.getElementById('btn-aplicar-fecha').addEventListener('click', () => {
-        fechaDesde = inputDesde.value ? new Date(inputDesde.value + 'T00:00:00') : null;
-        fechaHasta = inputHasta.value ? new Date(inputHasta.value + 'T23:59:59') : null;
-        modalFecha.style.display = 'none';
-        btnFilterDate.classList.toggle('filtro-activo', !!(fechaDesde || fechaHasta));
-        renderizarReportes();
-    });
-
-    document.getElementById('btn-limpiar-fecha').addEventListener('click', () => {
-        fechaDesde = null;
-        fechaHasta = null;
-        inputDesde.value = '';
-        inputHasta.value = '';
-        btnFilterDate.classList.remove('filtro-activo');
-        modalFecha.style.display = 'none';
-        renderizarReportes();
-    });
-
-    // --- MODAL DETALLE ---
-    btnCerrarModal.addEventListener('click', () => {
-        modalDetalle.style.display = 'none';
-        document.body.style.overflow = '';
-    });
-
-    modalDetalle.addEventListener('click', (e) => {
-        if (e.target === modalDetalle) {
-            modalDetalle.style.display = 'none';
-            document.body.style.overflow = '';
-        }
-    });
-
-    // Botones de estado dentro del modal
-    document.querySelectorAll('.btn-estado-modal').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const nuevoEstado = btn.getAttribute('data-estado');
-            if (confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) {
-                await actualizarEstadoReporte(reporteSeleccionadoId, nuevoEstado);
-                marcarBotonEstadoActivo(nuevoEstado);
-                modalDetalle.style.display = 'none';
-                document.body.style.overflow = '';
-            }
-        });
-    });
-
-    // --- FOTO DE PERFIL DEL ADMIN ---
-    async function cargarFotoPerfilAdmin(user) {
-        if (!avatarContainer) return;
-        let urlFoto = null;
-
-        try {
-            const userRef = doc(db, "usuarios", user.uid);
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-                const data = userSnap.data();
-                urlFoto = data.photoURL || data.fotoPerfil || data.foto_perfil || null;
-            }
-        } catch (err) {
-            console.error("Error al obtener foto de perfil desde Firestore:", err);
-        }
-
-        if (!urlFoto && user.photoURL) {
-            urlFoto = user.photoURL;
-        }
-
-        if (urlFoto) {
-            avatarContainer.innerHTML = `<img src="${urlFoto}" alt="Foto de perfil" referrerpolicy="no-referrer">`;
-        }
-    }
-
-    // --- LEER REPORTES ---
-    function cargarReportesFirestore() {
-        const q = query(collection(db, "reportes"), orderBy("fechaCreacion", "desc"));
-
-        onSnapshot(q, (snapshot) => {
-            todosLosReportes = [];
-            snapshot.forEach((documento) => {
-                const data = documento.data();
-                let fechaOrdenable = 0;
-                if (data.fechaCreacion) {
-                    fechaOrdenable = new Date(data.fechaCreacion).getTime() || 0;
-                }
-                todosLosReportes.push({
-                    id: documento.id,
-                    ...data,
-                    _fechaOrdenable: fechaOrdenable
-                });
-            });
-
-            todosLosReportes.sort((a, b) => b._fechaOrdenable - a._fechaOrdenable);
-            renderizarReportes();
-
-        }, (error) => {
-            console.error("❌ Error:", error.code, error.message);
-            container.innerHTML = `<div class="loading-state"><p>Error: ${error.code}</p></div>`;
-        });
-    }
-
-    function formatearFecha(fecha_creacion) {
-        let fecha;
-        if (!fecha_creacion) return "Sin fecha";
-        if (typeof fecha_creacion.toDate === 'function') {
-            fecha = fecha_creacion.toDate();
-        } else if (typeof fecha_creacion === 'string' || typeof fecha_creacion === 'number') {
-            fecha = new Date(fecha_creacion);
-        } else {
-            return "Fecha inválida";
-        }
-        if (isNaN(fecha.getTime())) return "Fecha inválida";
-        return fecha.toLocaleDateString('es-MX', {
-            day: '2-digit', month: 'short', year: 'numeric'
-        }) + " " + fecha.toLocaleTimeString('es-MX', {
-            hour: '2-digit', minute: '2-digit'
-        });
-    }
-
+    // ✅ Marcar botón de estado activo
     function marcarBotonEstadoActivo(estadoActual) {
         const estadoNormalizado = normalizarTexto(estadoActual) || 'pendiente';
         document.querySelectorAll('.btn-estado-modal').forEach(btn => {
@@ -347,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ✅ Abrir modal de detalle
     async function abrirModalDetalle(reporte) {
         reporteSeleccionadoId = reporte.id;
 
@@ -433,6 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = 'hidden';
     }
 
+    // ✅ Renderizar reportes
     function renderizarReportes() {
         const textoBusqueda = searchInput.value.toLowerCase().trim();
         container.innerHTML = "";
@@ -535,8 +469,162 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==========================================
+    //  CARGA DE DATOS
+    // ==========================================
+
+    // ✅ Cargar foto de perfil del admin
+    async function cargarFotoPerfilAdmin(user) {
+        if (!avatarContainer) return;
+        let urlFoto = null;
+
+        try {
+            const userRef = doc(db, "usuarios", user.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const data = userSnap.data();
+                urlFoto = data.photoURL || data.fotoPerfil || data.foto_perfil || null;
+            }
+        } catch (err) {
+            console.error("Error al obtener foto de perfil desde Firestore:", err);
+        }
+
+        if (!urlFoto && user.photoURL) {
+            urlFoto = user.photoURL;
+        }
+
+        if (urlFoto) {
+            avatarContainer.innerHTML = `<img src="${urlFoto}" alt="Foto de perfil" referrerpolicy="no-referrer">`;
+        }
+    }
+
+    // ✅ Cargar reportes desde Firestore
+    function cargarReportesFirestore() {
+        const q = query(collection(db, "reportes"), orderBy("fechaCreacion", "desc"));
+
+        onSnapshot(q, (snapshot) => {
+            todosLosReportes = [];
+            snapshot.forEach((documento) => {
+                const data = documento.data();
+                let fechaOrdenable = 0;
+                if (data.fechaCreacion) {
+                    fechaOrdenable = new Date(data.fechaCreacion).getTime() || 0;
+                }
+                todosLosReportes.push({
+                    id: documento.id,
+                    ...data,
+                    _fechaOrdenable: fechaOrdenable
+                });
+            });
+
+            todosLosReportes.sort((a, b) => b._fechaOrdenable - a._fechaOrdenable);
+            renderizarReportes();
+
+        }, (error) => {
+            console.error("❌ Error:", error.code, error.message);
+            container.innerHTML = `<div class="loading-state"><p>Error: ${error.code}</p></div>`;
+        });
+    }
+
+    // ==========================================
+    //  INICIALIZACIÓN
+    // ==========================================
+
+    // ✅ Monitorear autenticación
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const esAdmin = user.email === 'admin1@gmail.com' || user.email.endsWith('@admin.com');
+            if (!esAdmin) {
+                alert("⛔ Acceso denegado.");
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } else {
+                // ✅ INICIALIZAR NOTIFICACIONES
+                try {
+                    const notificacionesActivas = await notificationManager.init();
+                    
+                    if (notificacionesActivas) {
+                        console.log('✅ Notificaciones push activadas');
+                        // Enviar notificación de prueba después de 3 segundos
+                        setTimeout(() => {
+                            notificationManager.enviarNotificacionPrueba();
+                        }, 3000);
+                    } else {
+                        console.warn('⚠️ No se pudieron activar las notificaciones');
+                    }
+                } catch (error) {
+                    console.error('❌ Error con notificaciones:', error);
+                }
+                
+                cargarReportesFirestore();
+                cargarFotoPerfilAdmin(user);
+            }
+        } else {
+            window.location.href = 'index.html';
+        }
+    });
+
+    // ==========================================
+    //  EVENT LISTENERS
+    // ==========================================
+
+    // ✅ Filtro por fecha
+    btnFilterDate.addEventListener('click', () => {
+        modalFecha.style.display = 'flex';
+    });
+
+    modalFecha.addEventListener('click', (e) => {
+        if (e.target === modalFecha) modalFecha.style.display = 'none';
+    });
+
+    document.getElementById('btn-aplicar-fecha').addEventListener('click', () => {
+        fechaDesde = inputDesde.value ? new Date(inputDesde.value + 'T00:00:00') : null;
+        fechaHasta = inputHasta.value ? new Date(inputHasta.value + 'T23:59:59') : null;
+        modalFecha.style.display = 'none';
+        btnFilterDate.classList.toggle('filtro-activo', !!(fechaDesde || fechaHasta));
+        renderizarReportes();
+    });
+
+    document.getElementById('btn-limpiar-fecha').addEventListener('click', () => {
+        fechaDesde = null;
+        fechaHasta = null;
+        inputDesde.value = '';
+        inputHasta.value = '';
+        btnFilterDate.classList.remove('filtro-activo');
+        modalFecha.style.display = 'none';
+        renderizarReportes();
+    });
+
+    // ✅ Modal detalle
+    btnCerrarModal.addEventListener('click', () => {
+        modalDetalle.style.display = 'none';
+        document.body.style.overflow = '';
+    });
+
+    modalDetalle.addEventListener('click', (e) => {
+        if (e.target === modalDetalle) {
+            modalDetalle.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    });
+
+    // ✅ Botones de estado dentro del modal
+    document.querySelectorAll('.btn-estado-modal').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const nuevoEstado = btn.getAttribute('data-estado');
+            if (confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) {
+                await actualizarEstadoReporte(reporteSeleccionadoId, nuevoEstado);
+                marcarBotonEstadoActivo(nuevoEstado);
+                modalDetalle.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+    // ✅ Búsqueda
     searchInput.addEventListener('input', renderizarReportes);
 
+    // ✅ Filtros por estado
     pills.forEach(pill => {
         pill.addEventListener('click', (e) => {
             pills.forEach(p => p.classList.remove('active'));
@@ -546,7 +634,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ✅ Cerrar sesión
     btnLogout.addEventListener('click', () => {
-        signOut(auth).then(() => window.location.href = '../login.html');
+        if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+            signOut(auth).then(() => window.location.href = '../login.html');
+        }
     });
+
+    console.log('✅ Admin.js cargado correctamente');
 });

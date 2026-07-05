@@ -38,6 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectTipoFalla = document.getElementById('tipo-falla');
     const textareaDescripcion = document.getElementById('descripcion');
 
+    console.log({
+    btnCamara,
+    btnLocation,
+    videoCamera,
+    modalCameraLive
+});
+
     let streamCamera = null; // Para detener la cámara
     let archivoFotoReporte = null; //  Archivo para subir a Storage
 
