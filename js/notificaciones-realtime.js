@@ -47,7 +47,15 @@ class NotificacionesRealtime {
     }
 
     // ✅ Mostrar notificación nativa
+   // ✅ Mostrar notificación nativa
     mostrarNotificacion(titulo, mensaje, icono = null) {
+        // 🛑 CORRECCIÓN: Comprobar el almacenamiento persistente antes de procesar nada
+        const estaSilenciado = localStorage.getItem('notificaciones_silenciadas') === 'true';
+        if (estaSilenciado) {
+            console.log('🔕 Notificación omitida de forma permanente (Modo Silencio Activo)');
+            return; // Detiene por completo la ejecución, contadores y UI
+        }
+
         // Guardar para el contador
         this.notificacionesPendientes++;
         this.actualizarContador();
@@ -92,7 +100,6 @@ class NotificacionesRealtime {
             });
         }
     }
-
     // ✅ Obtener ícono según estado
     obtenerIconoPorEstado(estado) {
         const iconos = {
