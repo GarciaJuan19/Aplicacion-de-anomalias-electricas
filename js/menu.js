@@ -438,12 +438,12 @@ async function iniciarNotificaciones(user) {
             actualizarBadgeNotificaciones();
             
             // Mostrar notificación nativa si no está silenciado
-            if (!notificacionesSilenciadas) {
-                notificacionesRealtime.mostrarNotificacion(
-                    notificacion.titulo || 'Estado actualizado',
-                    `${notificacion.titulo || 'Reporte'}: ${notificacion.estadoAnterior} → ${notificacion.estadoNuevo}`
-                );
-            }
+            // (!notificacionesSilenciadas) {
+              //notificacionesRealtime.mostrarNotificacion(
+               //   notificacion.titulo || 'Estado actualizado',
+              //    `${notificacion.titulo || 'Reporte'}: ${notificacion.estadoAnterior} → ${notificacion.estadoNuevo}`
+              //);
+           //
         });
         
         if (escuchaActiva) {

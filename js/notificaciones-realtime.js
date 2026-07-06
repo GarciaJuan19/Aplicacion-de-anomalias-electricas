@@ -1,15 +1,14 @@
 // js/notificaciones-realtime.js
 import { db } from './firebase-config.js';
-import { 
-    collection, 
-    query, 
-    where, 
+import {
+    collection,
+    query,
+    where,
     onSnapshot,
     doc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { mostrarToast } from './utils.js';
-
 // ==========================================
 //  GESTOR DE NOTIFICACIONES EN TIEMPO REAL
 // ==========================================
@@ -46,14 +45,17 @@ class NotificacionesRealtime {
         return this.permisoNotificaciones;
     }
 
-    // ✅ Mostrar notificación nativa
-   // ✅ Mostrar notificación nativa
-    mostrarNotificacion(titulo, mensaje, icono = null) {
-        // 🛑 CORRECCIÓN: Comprobar el almacenamiento persistente antes de procesar nada
+
+    mostrarNotificacion(cambio) {
+        const emoji = this.obtenerEmojiPorEstado(cambio.estadoNuevo);
+        const titulo = this.formatearTitulo(cambio.estadoNuevo, cambio.titulo);
+        const mensaje = `${emoji} ${cambio.titulo}: ${cambio.estadoAnterior} → ${cambio.estadoNuevo}`;
+        const icono = this.obtenerIconoPorEstado(cambio.estadoNuevo);
+
         const estaSilenciado = localStorage.getItem('notificaciones_silenciadas') === 'true';
         if (estaSilenciado) {
             console.log('🔕 Notificación omitida de forma permanente (Modo Silencio Activo)');
-            return; // Detiene por completo la ejecución, contadores y UI
+            return;
         }
 
         // Guardar para el contador
@@ -70,14 +72,14 @@ class NotificacionesRealtime {
                 tag: `reporte-${Date.now()}`,
                 requireInteraction: true
             };
-            
+
             const notification = new Notification(titulo, options);
-            
+
             // Cerrar automáticamente después de 6 segundos
             setTimeout(() => {
                 if (notification.close) notification.close();
             }, 6000);
-            
+
             // Al hacer clic en la notificación
             notification.onclick = () => {
                 window.focus();
@@ -86,19 +88,21 @@ class NotificacionesRealtime {
                 window.location.href = 'mis-reportes.html';
             };
         }
-        
+
         // ✅ SIEMPRE mostrar Toast como respaldo
         mostrarToast(`🔔 ${titulo}: ${mensaje}`, 'info');
-        
+
         // Ejecutar callback si existe
-        if (this.onNotificacionCallback) {
-            this.onNotificacionCallback({
-                titulo,
-                mensaje,
-                icono,
-                timestamp: new Date()
-            });
-        }
+        this.onNotificacionCallback({
+            id: cambio.id,
+            folio: cambio.data.folio || cambio.id,
+            titulo: cambio.titulo,
+            estadoAnterior: cambio.estadoAnterior,
+            estadoNuevo: cambio.estadoNuevo,
+            mensaje,
+            icono,
+            timestamp: new Date()
+        });
     }
     // ✅ Obtener ícono según estado
     obtenerIconoPorEstado(estado) {
@@ -192,15 +196,15 @@ class NotificacionesRealtime {
         // Iniciar snapshot en tiempo real
         this.unsubscribe = onSnapshot(q, (snapshot) => {
             const cambios = [];
-            
+
             snapshot.docChanges().forEach((change) => {
                 const data = change.doc.data();
                 const docId = change.doc.id;
-                
+
                 // Guardar estado anterior
                 const estadoAnterior = this.lastReportes[docId];
                 const estadoActual = data.estado || 'pendiente';
-                
+
                 // Detectar cambios de estado (solo en modificaciones)
                 if (change.type === "modified") {
                     if (estadoAnterior && estadoAnterior.estado !== estadoActual) {
@@ -214,7 +218,7 @@ class NotificacionesRealtime {
                         });
                     }
                 }
-                
+
                 // Actualizar registro con datos actuales
                 this.lastReportes[docId] = {
                     estado: estadoActual,
@@ -223,25 +227,18 @@ class NotificacionesRealtime {
                     fecha: data.fechaCreacion
                 };
             });
-            
+
             // Procesar cambios detectados
             if (cambios.length > 0) {
                 cambios.forEach((cambio) => {
-                    const emoji = this.obtenerEmojiPorEstado(cambio.estadoNuevo);
-                    const titulo = this.formatearTitulo(cambio.estadoNuevo, cambio.titulo);
-                    const mensaje = `${emoji} ${cambio.titulo}: ${cambio.estadoAnterior} → ${cambio.estadoNuevo}`;
-                    
-                    this.mostrarNotificacion(
-                        titulo,
-                        mensaje,
-                        this.obtenerIconoPorEstado(cambio.estadoNuevo)
+                    this.mostrarNotificacion(cambio);
+
+                    console.log(
+                        `📢 Notificación: ${cambio.titulo} - ${cambio.estadoAnterior} → ${cambio.estadoNuevo}`
                     );
-                    
-                    // Log en consola
-                    console.log(`📢 Notificación: ${titulo} - ${mensaje}`);
                 });
             }
-            
+
         }, (error) => {
             console.error("❌ Error en onSnapshot:", error);
             mostrarToast('Error al cargar reportes en tiempo real', 'error');
@@ -271,7 +268,7 @@ class NotificacionesRealtime {
         const pendientes = Object.values(this.lastReportes).filter(r => r.estado === 'pendiente').length;
         const enRevision = Object.values(this.lastReportes).filter(r => r.estado === 'en revisión' || r.estado === 'en revision').length;
         const resueltos = Object.values(this.lastReportes).filter(r => r.estado === 'resuelto').length;
-        
+
         return {
             total,
             pendientes,
